@@ -1,0 +1,34 @@
+HAGSÄTRA/Rågsved
+Rågsved/Högdalen
+Högdalen/Bandhagen
+Bandhagen/Stureby
+Stureby/Svedmyra
+Svedmyra/Sockenplan
+Sockenplan/Enskede gård
+Enskede gård/Globen
+Globen/Gullmarsplan
+Gullmarsplan/Skanstull
+Skanstull/Medborgarplatsen
+Medborgarplatsen/SLUSSEN
+SLUSSEN/Gamla stan
+Gamla stan/T-CENTRALEN
+T-CENTRALEN/Hötorget
+Hötorget/Rådmansgatan
+Rådmansgatan/Odenplan
+Odenplan/S:t Eriksplan
+S:t Eriksplan/Fridhemsplan
+Fridhemsplan/Thorildsplan
+Thorildsplan/Kristineberg
+Kristineberg/ALVIK
+ALVIK/Stora mossen
+Stora mossen/Abrahamsberg
+Abrahamsberg/Brommaplan
+Brommaplan/ÅKESHOV
+ÅKESHOV/Ängbyplan
+Ängbyplan/Islandstorget
+Islandstorget/Blackeberg
+Blackeberg/Råcksta
+Råcksta/Vällingby
+Vällingby/Johannelund
+Johannelund/Hässelby gård
+Hässelby gård/HÄSSELBY STRAND

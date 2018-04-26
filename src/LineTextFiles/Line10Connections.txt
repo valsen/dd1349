@@ -1,0 +1,13 @@
+KUNGSTRÄDGÅRDEN/T-CENTRALEN
+T-CENTRALEN/Rådhuset
+Rådhuset/Fridhemsplan
+Fridhemsplan/Stadshagen
+Stadshagen/Västra Skogen
+Västra Skogen/Huvudsta
+Huvudsta/Solna strand
+Solna strand/Sundbybergs centrum
+Sundbybergs centrum/Duvbo
+Duvbo/Rissne
+Rissne/Rinkeby
+Rinkeby/Tensta
+Tensta/HJULSTA
