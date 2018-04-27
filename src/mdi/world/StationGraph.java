@@ -2,15 +2,46 @@ package mdi.world;
 import mdi.world.Station;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public abstract class StationGraph {
 
+    private Field field;
+    private ArrayList<Station> stations;
     private HashMap<Station, ArrayList<Station>> connections;
     private File stationsFile;
     private File connectionsFile;
 
+    public StationGraph(String stationPath, String connectionsPath, Field field) {
+        stationsFile = new File(stationPath);
+        connectionsFile = new File(connectionsPath);
+        createStations();
+        createConnections();
+    }
+
+    // Create the stations
+    private void createStations() {
+        try {
+            Scanner scanner = new Scanner(stationsFile);
+            while (scanner.hasNext()) {
+                String[] stationInfo = scanner.nextLine().split("/");
+            }
+        } catch(FileNotFoundException e) {
+            System.out.println("Failed to read stations file.");
+        }
+    }
+
+    // Create the hashMap
+    private void createConnections() {
+
+    }
+
+    /**
+     * @return The hashmap with station connections of this graph.
+     */
     public HashMap<Station, ArrayList<Station>> getConnections() {
         return connections;
     }
