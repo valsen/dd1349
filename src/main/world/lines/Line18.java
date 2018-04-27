@@ -1,7 +1,6 @@
-package mdi.world.lines;
+package main.world.lines;
 
-import mdi.world.SubwayLine;
-import mdi.world.Field;
+import main.world.Field;
 
 import java.awt.*;
 import java.io.File;

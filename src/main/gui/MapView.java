@@ -1,9 +1,8 @@
-package mdi.gui;
+package main.gui;
 
-import mdi.Simulator;
-import mdi.world.Station;
-import mdi.world.SubwayLine;
-import mdi.world.Train;
+import main.Simulator;
+import main.world.Station;
+import main.world.Train;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import static java.lang.Math.*;
 import static java.lang.Math.round;
-import static mdi.gui.GUI.BG_COLOR;
+import static main.gui.GUI.BG_COLOR;
 
 public class MapView extends JPanel implements MouseListener {
 

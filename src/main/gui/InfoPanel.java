@@ -1,6 +1,6 @@
-package mdi.gui;
+package main.gui;
 
-import mdi.world.Train;
+import main.world.Train;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.*;

@@ -1,8 +1,8 @@
-package mdi.world;
+package main.world;
 
 import java.awt.*;
 
-public class Station extends SimulationObject {
+public class Station {
 
     private String name;
     private int orientationDegrees;
@@ -10,10 +10,9 @@ public class Station extends SimulationObject {
     /**
      * Construct a station at this location.
      * @param location The location of the station.
-     * @param name The name of the mdi.world.Station.
+     * @param name The name of the main.world.Station.
      */
-    public Station(Field field, SubwayLine line, Color color, Location location, String name, int orientationDegrees) {
-        super(field, line, color, location);
+    public Station(Field field, Location location, String name, int orientationDegrees) {
         this.name = name;
         this.orientationDegrees = orientationDegrees;
     }

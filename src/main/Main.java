@@ -1,4 +1,4 @@
-package mdi;
+package main;
 
 public class Main {
 

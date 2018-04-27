@@ -1,5 +1,5 @@
-package mdi.world;
-import mdi.world.Station;
+package main.world;
+import main.world.Station;
 
 import java.io.File;
 import java.io.FileNotFoundException;

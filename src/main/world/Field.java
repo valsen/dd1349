@@ -1,4 +1,4 @@
-package mdi.world;
+package main.world;
 
 import java.util.*;
 

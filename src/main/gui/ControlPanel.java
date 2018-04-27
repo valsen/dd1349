@@ -1,6 +1,6 @@
-package mdi.gui;
+package main.gui;
 
-import mdi.Simulator;
+import main.Simulator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

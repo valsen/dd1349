@@ -1,6 +1,6 @@
-package mdi.gui;
+package main.gui;
 
-import mdi.*;
+import main.*;
 import java.awt.*;
 import javax.swing.*;
 

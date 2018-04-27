@@ -1,9 +1,9 @@
-package mdi;
+package main;
 
-import mdi.gui.GUI;
-import mdi.world.lines.*;
-import mdi.world.Field;
-import mdi.world.SubwayLine;
+import main.gui.GUI;
+import main.world.lines.*;
+import main.world.Field;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
