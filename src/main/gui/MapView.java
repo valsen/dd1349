@@ -58,7 +58,7 @@ public class MapView extends JPanel implements MouseListener {
         catch (IOException e) {
             System.out.println("Failed to load all icons.");
         }
-        scaledTrainIcon = trainIconGreen.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
         addMouseListener(this);
     }
 
@@ -80,7 +80,6 @@ public class MapView extends JPanel implements MouseListener {
             setVisible(true);
         }
         addStations();
-        addTrains();
         createLabels();
         preparePaint();
     }
@@ -113,32 +112,6 @@ public class MapView extends JPanel implements MouseListener {
         for (Station station : stationsToDraw) {
             stationLabels.put(station, new StationLabel(station.getName(), station.getOrientationDegrees()));
         }
-    }
-
-    /**
-     * Create list of all trains to draw.
-     */
-    private void addTrains() {
-        for (SubwayLine line : simulator.getSubwayLines()) {
-            trainsToDraw.addAll(line.getTrains());
-        }
-    }
-
-    /**
-     * Remove all stations from list of stations to draw.
-     */
-    public void removeAllStations() { stationsToDraw.clear();}
-
-    /**
-     * Remove all station labels from stationLabels.
-     */
-    public void removeStationLabels() { stationLabels.clear(); }
-
-    /**
-     * Remove all trains from list of trains to draw.
-     */
-    public void removeAllTrains() {
-        trainsToDraw.clear();
     }
 
     /**
@@ -206,24 +179,21 @@ public class MapView extends JPanel implements MouseListener {
     }
 
     /**
-     * Draw lines between all stations, and draw line number labels at
-     * first and last stations.
+     * Draw lines between all connected stations.
      */
     private void drawLinesBetweenStations() {
         int x1, x2, y1, y2;
-        for (SubwayLine line : simulator.getSubwayLines()) {
-            for (int i = 0; i < line.getStations().size() - 1; i++) {
-                Station current = line.getStations().get(i);
-                x1 = (int) (current.getCol() * xScale + (xScale / 2));
-                y1 = (int) (current.getRow() * yScale + (yScale / 2));
+        for (int i = 0; i < game.getCurrentGraph().getStations().size() - 1; i++) {
+            Station current = line.getStations().get(i);
+            x1 = (int) (current.getCol() * xScale + (xScale / 2));
+            y1 = (int) (current.getRow() * yScale + (yScale / 2));
 
-                Station next = line.getStations().get(i + 1);
-                x2 = (int) (next.getCol() * xScale + (xScale / 2));
-                y2 = (int) (next.getRow() * yScale + (yScale / 2));
+            Station next = line.getStations().get(i + 1);
+            x2 = (int) (next.getCol() * xScale + (xScale / 2));
+            y2 = (int) (next.getRow() * yScale + (yScale / 2));
 
-                g2.setColor(line.getColor());
-                g2.drawLine(x1, y1, x2, y2);
-            }
+            g2.setColor(line.getColor());
+            g2.drawLine(x1, y1, x2, y2);
         }
     }
 
