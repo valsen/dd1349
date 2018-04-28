@@ -8,8 +8,6 @@ public class GUI extends JFrame {
 
     static final Color BG_COLOR = new Color(45, 52, 55);
     private MapView map;
-    private ControlPanel controlPanel;
-    private InfoPanel infoPanel;
 
     /**
      * Create a view of the given WIDTH and height.
@@ -24,14 +22,10 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 400));
 
-        map = new MapView(this, Game, height, width);
-        controlPanel = new ControlPanel(Game, height);
-        infoPanel = new InfoPanel(height);
+        map = new MapView(this, game, height, width);
 
         Container contents = getContentPane();
-        contents.add(controlPanel, BorderLayout.WEST);
         contents.add(map, BorderLayout.CENTER);
-        contents.add(infoPanel, BorderLayout.EAST);
 
         pack();
         setVisible(true);
@@ -41,14 +35,4 @@ public class GUI extends JFrame {
      * @return the view of the map.
      */
     public MapView getMap() { return map; }
-
-    /**
-     * @return the control panel.
-     */
-    public ControlPanel getControlPanel() { return controlPanel; }
-
-    /**
-     * @return train information display panel.
-     */
-    public InfoPanel getInfoPanel() { return infoPanel; }
 }
