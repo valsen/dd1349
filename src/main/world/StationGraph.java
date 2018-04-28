@@ -10,15 +10,16 @@ import static java.lang.Math.abs;
 
 public abstract class StationGraph {
 
-    private ArrayList<Rail> rails;
     private Field field;
-    private ArrayList<Station> stations;
-    private HashMap<Station, ArrayList<Station>> connections;
+    private ArrayList<Rail> rails = new ArrayList<>();
+    private ArrayList<Station> stations = new ArrayList<>();
+    private HashMap<Station, ArrayList<Station>> connections = new HashMap<>();
     private Location startingLocation;
     protected File stationsFile;
     protected File connectionsFile;
 
     public StationGraph(String stationPath, String connectionsPath, Field field) {
+        this.field = field;
         stationsFile = new File(stationPath);
         connectionsFile = new File(connectionsPath);
         createStations();
@@ -30,6 +31,9 @@ public abstract class StationGraph {
             Scanner scanner = new Scanner(stationsFile);
             while (scanner.hasNext()) {
                 String[] stationInfo = scanner.nextLine().split("/");
+                Location stationLocation = new Location((int) round(Double.valueOf(stationInfo[2]) * field.getDepth()),
+                        (int) round(Double.valueOf(stationInfo[1]) * field.getWidth()));
+                stations.add(new Station(field, stationLocation, stationInfo[0], Integer.valueOf(stationInfo[3])));
             }
         } catch(FileNotFoundException e) {
             System.out.println("Failed to read stations file.");

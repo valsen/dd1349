@@ -19,7 +19,7 @@ public class Train extends FieldObject {
      * Creates a train at the specified location.
      * @param location the location of the train.
      */
-    Train(Field field, Location location) {
+    public Train(Field field, Location location) {
         super(field, location);
     }
 

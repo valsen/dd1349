@@ -14,7 +14,6 @@ public class Field
     
     // The depth and width of the field.
     private static int width, depth;
-    private static final double WIDTH_TO_DEPTH_FACTOR = 868.0 / 1028.0;
 
     // Storage for the simulation objects.
     private Set<FieldObject>[][] field;
@@ -23,10 +22,10 @@ public class Field
      * Represent a field of the given dimensions.
      */
     @SuppressWarnings("unchecked")
-    public Field(int width)
+    public Field(int width, int depth)
     {
         this.width = width;
-        this.depth = (int) Math.round(width * WIDTH_TO_DEPTH_FACTOR);
+        this.depth = depth;
         field = new HashSet[depth][width];
     }
     

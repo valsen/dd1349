@@ -13,6 +13,7 @@ public abstract class FieldObject {
     public FieldObject(Field field, Location location) {
         this.field = field;
         this.location = location;
+        System.out.println(field);
         field.place(this, location);
     }
 

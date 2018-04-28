@@ -16,7 +16,7 @@ public class GUI extends JFrame {
      */
     public GUI(Game game, int width, int height)
     {
-        setTitle("SL Simulation");
+        setTitle("Dysfunctional train game");
         setLocation(0, 0);
         setBackground(BG_COLOR);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
