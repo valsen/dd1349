@@ -2,7 +2,7 @@ package main.world;
 
 import java.awt.*;
 
-public class Station {
+public class Station extends FieldObject {
 
     private String name;
     private int orientationDegrees;
@@ -30,4 +30,5 @@ public class Station {
     public int getOrientationDegrees() {
         return orientationDegrees;
     }
+
 }

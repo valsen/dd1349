@@ -16,4 +16,18 @@ public abstract class FieldObject {
         field.place(this, location);
     }
 
+    /**
+     * @return The row of this object.
+     */
+    public int getRow() {
+        return location.getRow();
+    }
+
+    /**
+     * @return The column of this object.
+     */
+    public int getCol() {
+        return location.getCol();
+    }
+
 }

@@ -89,14 +89,6 @@ public class Train extends FieldObject {
         nextStation = subwayLine.getNextStation(railIndex + k, movingForward);
     }
 
-    /**
-     * Set special information about this train.
-     * @param info The information to inform about.
-     */
-    public void setSpecialInfo(String info) {
-        specialInfo = info;
-    }
-
     public boolean isAtStation() {
         return atStation;
     }

@@ -28,12 +28,9 @@ public class MapView extends JPanel implements MouseListener {
     private Game game;
     private BufferedImage bgImage;
     private Image fieldImage;
-    private Image trainIconBlue;
-    private Image trainIconRed;
-    private Image trainIconGreen;
-    private Image scaledTrainIconBlue;
-    private Image scaledTrainIconRed;
-    private Image scaledTrainIconGreen;private Set<Train> trainsToDraw = new HashSet<>();
+    private Image trainIcon;
+    private Image scaledTrainIcon;
+    private Set<Train> trainsToDraw = new HashSet<>();
     private Set<Station> stationsToDraw = new HashSet<>();
     private Map<Station, StationLabel> stationLabels = new HashMap<>();
     private int gridWidth, gridHeight;
@@ -56,16 +53,12 @@ public class MapView extends JPanel implements MouseListener {
         gridWidth = width;
         size = new Dimension(width, height);
         try {
-            trainIconBlue = ImageIO.read(new File("src/Sprites/icons8-railcar-40.png"));
-            trainIconRed = ImageIO.read(new File("src/Sprites/röd.png"));
-            trainIconGreen = ImageIO.read(new File("src/Sprites/grön.png"));
+            trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
         }
         catch (IOException e) {
             System.out.println("Failed to load all icons.");
         }
-        scaledTrainIconBlue = trainIconBlue.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
-        scaledTrainIconRed = trainIconRed.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
-        scaledTrainIconGreen = trainIconGreen.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        scaledTrainIcon = trainIconGreen.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
         addMouseListener(this);
     }
 
