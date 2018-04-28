@@ -12,6 +12,7 @@ public abstract class StationGraph {
     private Field field;
     private ArrayList<Station> stations;
     private HashMap<Station, ArrayList<Station>> connections;
+    private Location startingLocation;
     protected File stationsFile;
     protected File connectionsFile;
 

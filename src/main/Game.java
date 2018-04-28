@@ -13,11 +13,13 @@ public class Game {
     private Field field;
     private StationGraph currentGraph;
     private Train mainTrain;
+    private GUI gui;
 
     public Game(int width) {
         field = new Field(width);
         graphs.add(new TestGraph(field));
         currentGraph = graphs.get(0);
+        mainTrain = new Train(currentGraph.getStartingLocation);
     }
 
     public StationGraph getCurrentGraph() {
