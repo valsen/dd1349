@@ -1,6 +1,5 @@
 package main.gui;
 
-import main.Simulator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

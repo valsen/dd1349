@@ -16,7 +16,7 @@ public class GUI extends JFrame {
      * @param height The simulation's height.
      * @param width  The simulation's WIDTH.
      */
-    public GUI(Simulator simulator, int width, int height)
+    public GUI(Game game, int width, int height)
     {
         setTitle("SL Simulation");
         setLocation(0, 0);
@@ -24,8 +24,8 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 400));
 
-        map = new MapView(this, simulator, height, width);
-        controlPanel = new ControlPanel(simulator, height);
+        map = new MapView(this, Game, height, width);
+        controlPanel = new ControlPanel(Game, height);
         infoPanel = new InfoPanel(height);
 
         Container contents = getContentPane();

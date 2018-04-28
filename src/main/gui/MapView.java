@@ -1,6 +1,6 @@
 package main.gui;
 
-import main.Simulator;
+import main.Game;
 import main.world.Station;
 import main.world.Train;
 import javax.imageio.ImageIO;
@@ -25,7 +25,7 @@ public class MapView extends JPanel implements MouseListener {
     private static final int STATION_SIZE = 15;
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
-    private Simulator simulator;
+    private Game game;
     private BufferedImage bgImage;
     private Image fieldImage;
     private Image trainIconBlue;
@@ -45,10 +45,10 @@ public class MapView extends JPanel implements MouseListener {
     /**
      * Create a new MapView component.
      */
-    MapView(GUI gui, Simulator simulator, int height, int width)
+    MapView(GUI gui, Game game, int height, int width)
     {
         this.gui = gui;
-        this.simulator = simulator;
+        this.game = game;
         setLayout(null); //required for custom placement of labels.
         setBackground(BG_COLOR);
         xScale = yScale = GRID_VIEW_SCALING_FACTOR;
@@ -109,7 +109,7 @@ public class MapView extends JPanel implements MouseListener {
      * Create list of all stations to draw.
      */
     private void addStations() {
-        for (SubwayLine line : simulator.getSubwayLines()) {
+        for (station : game.get) {
             stationsToDraw.addAll(line.getStations());
         }
     }
