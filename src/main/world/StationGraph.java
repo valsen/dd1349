@@ -65,4 +65,8 @@ public abstract class StationGraph {
         }
         return available;
     }
+
+    public ArrayList<Station> getStations() {
+        return stations;
+    }
 }

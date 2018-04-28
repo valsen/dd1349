@@ -17,4 +17,8 @@ public class Game {
         graphs.add(new TestGraph(field));
         currentGraph = graphs.get(0);
     }
+
+    public StationGraph getCurrentGraph() {
+        return currentGraph;
+    }
 }

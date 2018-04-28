@@ -102,9 +102,7 @@ public class MapView extends JPanel implements MouseListener {
      * Create list of all stations to draw.
      */
     private void addStations() {
-        for (station : game.get) {
-            stationsToDraw.addAll(line.getStations());
-        }
+        stationsToDraw.addAll(game.getCurrentGraph().getStations());
     }
 
     /**
