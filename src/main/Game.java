@@ -14,6 +14,7 @@ public class Game {
 
     public Game(int width) {
         field = new Field(width);
-        graphs.add(new TestGraph());
+        graphs.add(new TestGraph(field));
+        currentGraph = graphs.get(0);
     }
 }
