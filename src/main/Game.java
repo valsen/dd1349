@@ -1,5 +1,6 @@
 package main;
 
+import main.gui.GUI;
 import main.world.Field;
 import main.world.StationGraph;
 import main.world.Train;

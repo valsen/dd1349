@@ -1,14 +1,16 @@
 package main.world;
-import main.world.Station;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import static java.lang.Math.round;
+import static java.lang.Math.abs;
 
 public abstract class StationGraph {
 
+    private ArrayList<Rail> rails;
     private Field field;
     private ArrayList<Station> stations;
     private HashMap<Station, ArrayList<Station>> connections;
@@ -20,7 +22,6 @@ public abstract class StationGraph {
         stationsFile = new File(stationPath);
         connectionsFile = new File(connectionsPath);
         createStations();
-        createConnections();
     }
 
     // Create the stations
@@ -35,9 +36,49 @@ public abstract class StationGraph {
         }
     }
 
-    // Create the hashMap
-    private void createConnections() {
+    // Connect two stationsToDraw using Digital Differential Analyzer algorithm.
+    private void connectStationsDDA(Station fromStation, Station toStation) {
 
+        int startX = fromStation.getCol();
+        int startY = fromStation.getRow();
+        int endX = toStation.getCol();
+        int endY = toStation.getRow();
+
+        // Ensure the first location has a rail
+        addRail(startY, startX);
+
+        int dX = endX - startX;
+        int dY = endY - startY;
+        int steps;
+        if (abs(dX) > abs(dY)) {
+            steps = abs(dX);
+        } else {
+            steps = abs(dY);
+        }
+        double xIncrement = dX / (double) steps;
+        double yIncrement = dY / (double) steps;
+
+        // Start "drawing"
+        double x = startX;
+        double y = startY;
+        for (int i = 0; i < steps; i++) {
+            x += xIncrement;
+            y += yIncrement;
+            addRail((int) round(y), (int) round(x));
+        }
+    }
+
+    // Helper method for adding a rail. If there is a rail at the location, do nothing. If there is not, add
+    // the rail.
+    private void addRail(int row, int col) {
+        if(field.getObjectsAt(row, col) != null) {
+            for (FieldObject o : field.getObjectsAt(row, col)) {
+                if (o instanceof Rail) {
+                    return;
+                }
+            }
+        }
+        rails.add(new Rail(field, new Location(row, col)));
     }
 
     /**
