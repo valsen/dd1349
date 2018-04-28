@@ -31,6 +31,7 @@ public class Train extends FieldObject {
      * the time limit. Reverse train's direction when it reaches an end
      * station.
      */
+    // TODO
     /* void moveToNextRail() {
         if (atStation && stationCounter <= STATION_TIME_LIMIT) {
             stationCounter += rng.nextInt(10);
@@ -86,7 +87,7 @@ public class Train extends FieldObject {
      * @param k -1 if this train is moving backwards. 1 if moving forward.
      */
     private void setNextStation(int k) {
-        nextStation = subwayLine.getNextStation(railIndex + k, movingForward);
+        // TODO
     }
 
     public boolean isAtStation() {

@@ -13,6 +13,7 @@ public class Station extends FieldObject {
      * @param name The name of the main.world.Station.
      */
     public Station(Field field, Location location, String name, int orientationDegrees) {
+        super(field, location);
         this.name = name;
         this.orientationDegrees = orientationDegrees;
     }

@@ -12,8 +12,8 @@ public abstract class StationGraph {
     private Field field;
     private ArrayList<Station> stations;
     private HashMap<Station, ArrayList<Station>> connections;
-    private File stationsFile;
-    private File connectionsFile;
+    protected File stationsFile;
+    protected File connectionsFile;
 
     public StationGraph(String stationPath, String connectionsPath, Field field) {
         stationsFile = new File(stationPath);
