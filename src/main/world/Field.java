@@ -1,4 +1,4 @@
-package mdi.world;
+package main.world;
 
 import java.util.*;
 
@@ -14,19 +14,18 @@ public class Field
     
     // The depth and width of the field.
     private static int width, depth;
-    private static final double WIDTH_TO_DEPTH_FACTOR = 868.0 / 1028.0;
 
     // Storage for the simulation objects.
-    private Set<SimulationObject>[][] field;
+    private Set<FieldObject>[][] field;
 
     /**
      * Represent a field of the given dimensions.
      */
     @SuppressWarnings("unchecked")
-    public Field(int width)
+    public Field(int width, int depth)
     {
         this.width = width;
-        this.depth = (int) Math.round(width * WIDTH_TO_DEPTH_FACTOR);
+        this.depth = depth;
         field = new HashSet[depth][width];
     }
     
@@ -35,7 +34,7 @@ public class Field
      * @param location The location to remove.
      * @param object The object to remove.
      */
-    void remove(SimulationObject object, Location location) {
+    void remove(FieldObject object, Location location) {
         if (field[location.getRow()][location.getCol()] == null) {
             // nothing 2 do here
         }
@@ -45,27 +44,16 @@ public class Field
     }
     
     /**
-     * Place a simulation object at the given location.
-     * @param simulationObject The animal to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
+     * Place a FieldObject at the given location.
+     * @param object The object to be placed.
+     * @param location Where to place the object.
      */
-    public void place(SimulationObject simulationObject, int row, int col)
-    {
-        place(simulationObject, new Location(row, col));
-    }
-    
-    /**
-     * Place a simulation object at the given location.
-     * @param simulationObject The object to be placed.
-     * @param location Where to place the animal.
-     */
-    void place(SimulationObject simulationObject, Location location)
+    void place(FieldObject object, Location location)
     {
         if(field[location.getRow()][location.getCol()] == null) {
             field[location.getRow()][location.getCol()] = new HashSet<>();
         }
-        field[location.getRow()][location.getCol()].add(simulationObject);
+        field[location.getRow()][location.getCol()].add(object);
     }
     
     /**
@@ -73,7 +61,7 @@ public class Field
      * @param location Where in the field.
      * @return The animal at the given location, or null if there is none.
      */
-    Set<SimulationObject> getObjectsAt(Location location)
+    Set<FieldObject> getObjectsAt(Location location)
     {
         return getObjectsAt(location.getRow(), location.getCol());
     }
@@ -84,7 +72,7 @@ public class Field
      * @param col The desired column.
      * @return The animal at the given location, or null if there is none.
      */
-    Set<SimulationObject> getObjectsAt(int row, int col)
+    Set<FieldObject> getObjectsAt(int row, int col)
     {
         return field[row][col];
     }

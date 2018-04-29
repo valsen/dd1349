@@ -1,4 +1,4 @@
-package mdi.world;
+package main.world;
 
 /**
  * Represent a location in a rectangular grid.
