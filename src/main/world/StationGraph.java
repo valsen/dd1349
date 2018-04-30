@@ -178,7 +178,11 @@ public abstract class StationGraph {
     // Debug method to print all (one-directional) connections
     private void printConnections() {
         for (Station station : connections.keySet()) {
-            System.out.println(connections.get(station));
+            System.out.print(station.getName() + " connects to: ");
+            for (Station connection : connections.get(station)) {
+                System.out.print(connection.getName() + ", ");
+            }
+            System.out.println();
         }
     }
 }
