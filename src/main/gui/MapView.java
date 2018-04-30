@@ -1,6 +1,7 @@
 package main.gui;
 
 import main.Game;
+import main.world.Location;
 import main.world.Station;
 import main.world.StationGraph;
 import main.world.Train;
@@ -12,10 +13,8 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import static java.lang.Math.*;
 import static java.lang.Math.round;
 import static main.gui.GUI.BG_COLOR;
@@ -141,6 +140,7 @@ public class MapView extends JPanel {
 
             drawLinesBetweenAllStations();
             drawStations();
+            drawVictims();
             drawNewBackground();
             drawStationLabels();
     }
@@ -284,6 +284,28 @@ public class MapView extends JPanel {
         y = (int) (y * yScale - (TRAIN_SIZE / 2) + yScale / 2);
 
         g.drawImage(scaledTrainIcon, x, y, null);
+    }
+
+    private void drawVictims() {
+        Random rnd = new Random();
+        for (Station from : game.getCurrentGraph().getStations()) {
+            for (Station next : game.getCurrentGraph().getConnections().get(from)) {
+                double ratio = rnd.nextDouble();
+                placeVictim(from, next, ratio);
+                System.out.println("Spawned victim between " + from.getName() + " and "
+                        + next.getName() + ", at " + (int)(ratio*100) + "% of the distance.");
+            }
+        }
+    }
+
+    private void placeVictim(Station from, Station to, double ratio) {
+        int dx = to.getCol() - from.getCol();
+        int dy = (to.getRow() - from.getRow());
+        double hyp = sqrt(pow(dx,2)+pow(dy, 2));
+        double angle = atan2(dy, dx);
+        int victimXPos = (int) (from.getCol()+cos(angle)*hyp*ratio) - 10;
+        int victimYPos = (int) (from.getRow()+sin(angle)*hyp*ratio) - 10;
+        g.fillOval(victimXPos, victimYPos, 20, 20);
     }
 
     /**
