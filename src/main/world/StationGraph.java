@@ -13,7 +13,7 @@ public abstract class StationGraph {
     private Field field;
     private ArrayList<Rail> rails = new ArrayList<>();
     private ArrayList<Station> stations = new ArrayList<>();
-    private HashMap<Station, ArrayList<Station>> connections = new HashMap<>();
+    private HashMap<Station, ArrayList<Station>> connections;
     private Location startingLocation;
     protected File stationsFile;
     protected File connectionsFile;
@@ -24,6 +24,8 @@ public abstract class StationGraph {
         connectionsFile = new File(connectionsPath);
         createStations();
         createRailConnections();
+        createConnectionsMap();
+        printConnections();
     }
 
     // Create the stations
@@ -50,7 +52,7 @@ public abstract class StationGraph {
                 connectStationsByName(connectedStations[0], connectedStations[1]);
             }
         } catch(FileNotFoundException e) {
-            System.out.println("Failed to read connections file.");
+            System.out.println("Failed to read connections file in createRailConnections method.");
         }
     }
 
@@ -121,6 +123,27 @@ public abstract class StationGraph {
         rails.add(new Rail(field, new Location(row, col)));
     }
 
+    // Create the connections HashMap using the connectionsFile
+    private void createConnectionsMap() {
+        connections = new HashMap<Station, ArrayList<Station>>();
+        for(Station station : stations) {
+            connections.put(station, new ArrayList<>());
+        }
+        try {
+            Scanner scanner = new Scanner(connectionsFile);
+            while (scanner.hasNext()) {
+                String[] connected = scanner.nextLine().split("/");
+                Station from = findStation(connected[0]);
+                Station to = findStation(connected[1]);
+                if(from != null && to != null) {
+                    connections.get(from).add(to);
+                }
+            }
+        } catch(FileNotFoundException e) {
+            System.out.println("Failed to read connections file in createConnectionsMap method.");
+        }
+    }
+
     /**
      * @return The hashmap with station connections of this graph.
      */
@@ -150,5 +173,12 @@ public abstract class StationGraph {
 
     public ArrayList<Station> getStations() {
         return stations;
+    }
+
+    // Debug method to print all (one-directional) connections
+    private void printConnections() {
+        for (Station station : connections.keySet()) {
+            System.out.println(connections.get(station));
+        }
     }
 }
