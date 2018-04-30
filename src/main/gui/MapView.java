@@ -1,10 +1,8 @@
 package main.gui;
 
 import main.Game;
-import main.world.Location;
-import main.world.Station;
-import main.world.StationGraph;
-import main.world.Train;
+import main.world.*;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +23,7 @@ public class MapView extends JPanel {
     private static final Color ACTIVE_RAIL_COLOR = new Color(255, 101, 162);
     private static final int TRAIN_SIZE = 30;
     private static final int STATION_SIZE = 15;
+    private static final int VICTIM_SIZE = 50;
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
     private Game game;
@@ -287,25 +286,17 @@ public class MapView extends JPanel {
     }
 
     private void drawVictims() {
-        Random rnd = new Random();
-        for (Station from : game.getCurrentGraph().getStations()) {
-            for (Station next : game.getCurrentGraph().getConnections().get(from)) {
-                double ratio = rnd.nextDouble();
-                placeVictim(from, next, ratio);
-                System.out.println("Spawned victim between " + from.getName() + " and "
-                        + next.getName() + ", at " + (int)(ratio*100) + "% of the distance.");
-            }
+        for (Victim victim : game.getCurrentGraph().getVictims()) {
+            drawCenteredVictim(victim, victim.getCol(), victim.getRow());
         }
     }
 
-    private void placeVictim(Station from, Station to, double ratio) {
-        int dx = to.getCol() - from.getCol();
-        int dy = (to.getRow() - from.getRow());
-        double hyp = sqrt(pow(dx,2)+pow(dy, 2));
-        double angle = atan2(dy, dx);
-        int victimXPos = (int) (from.getCol()+cos(angle)*hyp*ratio) - 10;
-        int victimYPos = (int) (from.getRow()+sin(angle)*hyp*ratio) - 10;
-        g.fillOval(victimXPos, victimYPos, 20, 20);
+    private void drawCenteredVictim(Victim victim, int x, int y) {
+        x = (int) (x * xScale - VICTIM_SIZE / 2 + xScale / 2);
+        y = (int) (y * xScale - VICTIM_SIZE / 2 + yScale / 2);
+        Image scaledVictimIcon = victim.getIcon().getScaledInstance(VICTIM_SIZE, VICTIM_SIZE, 0);
+        //g.fillRect(x, y, VICTIM_SIZE, VICTIM_SIZE);
+        g.drawImage(scaledVictimIcon, x, y, null);
     }
 
     /**

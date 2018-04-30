@@ -1,16 +1,14 @@
 package main;
 
 import main.gui.GUI;
-import main.world.Field;
-import main.world.Location;
-import main.world.StationGraph;
-import main.world.Train;
+import main.world.*;
 import main.world.graphs.TestGraph;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Game {
 
@@ -18,6 +16,7 @@ public class Game {
     private Field field;
     private StationGraph currentGraph;
     private Train mainTrain;
+    private HashSet<Victim> victims;
     private GUI gui;
     private Timer timer;
     private boolean running = true;
