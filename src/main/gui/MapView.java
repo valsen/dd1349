@@ -21,8 +21,9 @@ import static java.lang.Math.round;
 import static main.gui.GUI.BG_COLOR;
 
 public class MapView extends JPanel {
-
-    private static final Color RAIL_COLOR = new Color(255, 101, 162);
+    
+    private static final Color INACTIVE_RAIL_COLOR = new Color(160, 160, 160);
+    private static final Color ACTIVE_RAIL_COLOR = new Color(255, 101, 162);
     private static final int TRAIN_SIZE = 30;
     private static final int STATION_SIZE = 15;
     private final double GRID_VIEW_SCALING_FACTOR = 1;
@@ -138,7 +139,7 @@ public class MapView extends JPanel {
             yScale = (double) size.height / gridHeight;
             xScale = yScale = min(xScale, yScale);
 
-            drawLinesBetweenStations();
+            drawLinesBetweenAllStations();
             drawStations();
             drawNewBackground();
             drawStationLabels();
@@ -183,19 +184,19 @@ public class MapView extends JPanel {
     /**
      * Draw lines between all connected stations.
      */
-    private void drawLinesBetweenStations() {
+    private void drawLinesBetweenAllStations() {
         int x1, x2, y1, y2;
         for (int i = 0; i < game.getCurrentGraph().getStations().size() - 1; i++) {
-            Station current = currentGraph.getStations().get(i);
-            x1 = (int) (current.getCol() * xScale + (xScale / 2));
-            y1 = (int) (current.getRow() * yScale + (yScale / 2));
+            Station from = currentGraph.getStations().get(i);
+            x1 = (int) (from.getCol() * xScale + (xScale / 2));
+            y1 = (int) (from.getRow() * yScale + (yScale / 2));
 
-            Station next = currentGraph.getStations().get(i + 1);
-            x2 = (int) (next.getCol() * xScale + (xScale / 2));
-            y2 = (int) (next.getRow() * yScale + (yScale / 2));
-
-            g2.setColor(RAIL_COLOR);
-            g2.drawLine(x1, y1, x2, y2);
+            for(Station to : game.getCurrentGraph().getAvailableStations(from, null)) {
+                x2 = (int) (to.getCol() * xScale + (xScale / 2));
+                y2 = (int) (to.getRow() * yScale + (yScale / 2));
+                g2.setColor(INACTIVE_RAIL_COLOR);
+                g2.drawLine(x1, y1, x2, y2);
+            }
         }
     }
 
