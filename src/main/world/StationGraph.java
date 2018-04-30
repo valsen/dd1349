@@ -67,7 +67,7 @@ public abstract class StationGraph {
                     Image victimIcon = ImageIO.read(new File("src/Sprites/victimIcons/" + imageFileName));
                     double ratio = rnd.nextDouble();
                     if (fromStation != null && toStation != null) {
-                        Location victimLocation = placeVictim(fromStation, toStation, ratio);
+                        Location victimLocation = setVictimLocation(fromStation, toStation, ratio);
                         victims.add(new Victim(field, victimLocation, victimName, victimIcon));
                         System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
                                 victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
@@ -85,14 +85,14 @@ public abstract class StationGraph {
         }
     }
 
-    // Helper method to set location of victim
-    private Location placeVictim(Station from, Station to, double ratio) {
+    // Helper method to set location of victim.
+    private Location setVictimLocation(Station from, Station to, double ratio) {
         int dx = to.getCol() - from.getCol();
         int dy = (to.getRow() - from.getRow());
-        double hyp = sqrt(pow(dx,2)+pow(dy, 2));
+        double hyp = sqrt(pow(dx,2) + pow(dy, 2));
         double angle = atan2(dy, dx);
-        int victimXPos = (int) (from.getCol()+cos(angle)*hyp*ratio);
-        int victimYPos = (int) (from.getRow()+sin(angle)*hyp*ratio);
+        int victimXPos = (int) (from.getCol() + cos(angle) * hyp * ratio);
+        int victimYPos = (int) (from.getRow() + sin(angle) * hyp * ratio);
         return new Location(victimYPos, victimXPos);
     }
 
