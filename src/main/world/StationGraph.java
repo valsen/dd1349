@@ -62,9 +62,9 @@ public abstract class StationGraph {
                 String victimName = victimInfo[0];
                 Station fromStation = findStation(victimInfo[1]);
                 Station toStation = findStation(victimInfo[2]);
-                String imageName = victimInfo[3];
+                String imageFileName = victimInfo[3];
                 try {
-                    Image victimIcon = ImageIO.read(new File("src/Sprites/victimIcons/" + imageName));
+                    Image victimIcon = ImageIO.read(new File("src/Sprites/victimIcons/" + imageFileName));
                     double ratio = rnd.nextDouble();
                     if (fromStation != null && toStation != null) {
                         Location victimLocation = placeVictim(fromStation, toStation, ratio);
@@ -74,10 +74,10 @@ public abstract class StationGraph {
                     } else {
                         System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
                                 victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
-                                "Please ensure spelling is correct and that all files are found.");
+                                "Please ensure spelling of stations is correct.");
                     }
                 } catch (IOException e) {
-                    System.out.println("no image found for " + victimName + ". Will not spawn victim.");
+                    System.out.println("No image found for " + victimName + ". Will not spawn victim.");
                 }
             }
         } catch(FileNotFoundException e) {
@@ -85,6 +85,7 @@ public abstract class StationGraph {
         }
     }
 
+    // Helper method to set location of victim
     private Location placeVictim(Station from, Station to, double ratio) {
         int dx = to.getCol() - from.getCol();
         int dy = (to.getRow() - from.getRow());

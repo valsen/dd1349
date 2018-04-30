@@ -16,7 +16,6 @@ public class Game {
     private Field field;
     private StationGraph currentGraph;
     private Train mainTrain;
-    private HashSet<Victim> victims;
     private GUI gui;
     private Timer timer;
     private boolean running = true;

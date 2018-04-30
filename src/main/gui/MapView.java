@@ -285,17 +285,25 @@ public class MapView extends JPanel {
         g.drawImage(scaledTrainIcon, x, y, null);
     }
 
+    /**
+     * Draw the victims.
+     */
     private void drawVictims() {
         for (Victim victim : game.getCurrentGraph().getVictims()) {
             drawCenteredVictim(victim, victim.getCol(), victim.getRow());
         }
     }
 
+    /**
+     * Draw a victim centered at the specified row and column.
+     * @param victim the victim to be drawn.
+     * @param x the column of the victim.
+     * @param y the row of the victim.
+     */
     private void drawCenteredVictim(Victim victim, int x, int y) {
         x = (int) (x * xScale - VICTIM_SIZE / 2 + xScale / 2);
         y = (int) (y * xScale - VICTIM_SIZE / 2 + yScale / 2);
         Image scaledVictimIcon = victim.getIcon().getScaledInstance(VICTIM_SIZE, VICTIM_SIZE, 0);
-        //g.fillRect(x, y, VICTIM_SIZE, VICTIM_SIZE);
         g.drawImage(scaledVictimIcon, x, y, null);
     }
 
