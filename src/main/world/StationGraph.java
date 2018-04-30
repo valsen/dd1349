@@ -13,7 +13,7 @@ public abstract class StationGraph {
     private Field field;
     private ArrayList<Rail> rails = new ArrayList<>();
     private ArrayList<Station> stations = new ArrayList<>();
-    private HashMap<Station, ArrayList<Station>> connections = new HashMap<>();
+    private HashMap<Station, ArrayList<Station>> connections;
     private Location startingLocation;
     protected File stationsFile;
     protected File connectionsFile;
@@ -23,6 +23,9 @@ public abstract class StationGraph {
         stationsFile = new File(stationPath);
         connectionsFile = new File(connectionsPath);
         createStations();
+        createRailConnections();
+        createConnectionsMap();
+        printConnections();
     }
 
     // Create the stations
@@ -37,6 +40,41 @@ public abstract class StationGraph {
             }
         } catch(FileNotFoundException e) {
             System.out.println("Failed to read stations file.");
+        }
+    }
+
+    // Connect the stations by rails and add the connections to the connections HashMap
+    private void createRailConnections() {
+        try {
+            Scanner scanner = new Scanner(connectionsFile);
+            while (scanner.hasNext()) {
+                String[] connectedStations = scanner.nextLine().split("/");
+                connectStationsByName(connectedStations[0], connectedStations[1]);
+            }
+        } catch(FileNotFoundException e) {
+            System.out.println("Failed to read connections file in createRailConnections method.");
+        }
+    }
+
+    // Helper method to search for station by name
+    private Station findStation(String stationName) {
+        for(Station station : stations) {
+            if(station.getName().equals(stationName)) {
+                return station;
+            }
+        }
+        return null;
+    }
+
+    // Helper method to connect stations by name
+    private void connectStationsByName(String fromName, String toName) {
+        Station from = findStation(fromName);
+        Station to = findStation(toName);
+        if(from != null && to != null) {
+            connectStationsDDA(from, to);
+        } else {
+            System.out.println("Failed to connect stations " + fromName + " and " + toName + ". Please ensure" +
+                    " spelling is correct and that all files are found.");
         }
     }
 
@@ -85,6 +123,27 @@ public abstract class StationGraph {
         rails.add(new Rail(field, new Location(row, col)));
     }
 
+    // Create the connections HashMap using the connectionsFile
+    private void createConnectionsMap() {
+        connections = new HashMap<Station, ArrayList<Station>>();
+        for(Station station : stations) {
+            connections.put(station, new ArrayList<>());
+        }
+        try {
+            Scanner scanner = new Scanner(connectionsFile);
+            while (scanner.hasNext()) {
+                String[] connected = scanner.nextLine().split("/");
+                Station from = findStation(connected[0]);
+                Station to = findStation(connected[1]);
+                if(from != null && to != null) {
+                    connections.get(from).add(to);
+                }
+            }
+        } catch(FileNotFoundException e) {
+            System.out.println("Failed to read connections file in createConnectionsMap method.");
+        }
+    }
+
     /**
      * @return The hashmap with station connections of this graph.
      */
@@ -114,5 +173,12 @@ public abstract class StationGraph {
 
     public ArrayList<Station> getStations() {
         return stations;
+    }
+
+    // Debug method to print all (one-directional) connections
+    private void printConnections() {
+        for (Station station : connections.keySet()) {
+            System.out.println(connections.get(station));
+        }
     }
 }
