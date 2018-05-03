@@ -27,11 +27,11 @@ public class Train extends FieldObject {
     public void toggleRoute(ArrayList<Station> list) {
         if (list.size() > 1) {
             Station nextNext = list.get(new Random().nextInt(list.size()));
-            if (nextNext.equals(nextNextStation)) {
-                toggleRoute(list);
+            if (!nextNext.equals(nextNextStation)) {
+                nextNextStation = nextNext;
             }
             else {
-                nextNextStation = nextNext;
+                toggleRoute(list);
             }
         }
     }
