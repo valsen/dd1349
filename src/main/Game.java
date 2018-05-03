@@ -10,6 +10,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static java.lang.Math.*;
+import static java.lang.Math.sin;
+
 public class Game {
 
     private ArrayList<StationGraph> graphs = new ArrayList<>();
@@ -56,5 +59,21 @@ public class Game {
 
     public void setRunning(boolean bool) {
         running = bool;
+    }
+
+    private void moveTowards(FieldObject fieldObject, Station to, double velocity) {
+        int dx = to.getX() - fieldObject.getX();
+        int dy = to.getY() - fieldObject.getY();
+        int newXPos, newYPos;
+        if (dx == 0) {
+            newXPos = fieldObject.getX();
+            newYPos = to.getY() > fieldObject.getY() ? (int) round(fieldObject.getY() + velocity) : (int) round(fieldObject.getY() - velocity);
+        }
+        else {
+            double angle = atan2(dy, dx);
+            newXPos = (int) (fieldObject.getX() + cos(angle) * velocity);
+            newYPos = (int) (fieldObject.getY() + sin(angle) * velocity);
+        }
+        fieldObject.moveTo(newXPos, newYPos);
     }
 }
