@@ -152,11 +152,10 @@ public class Game {
 
     private void setStartingStations(StationGraph graph) {
         Random rng = new Random();
-        startingStation = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
-        ArrayList<Station> startNextOptions = currentGraph.getAvailableStations(startingStation, null);
-        System.out.println(startNextOptions);
+        startingStation = graph.getStations().get(rng.nextInt(graph.getStations().size()));
+        ArrayList<Station> startNextOptions = graph.getAvailableStations(startingStation, null);
         startNext = startNextOptions.get(rng.nextInt(startNextOptions.size()));
-        ArrayList<Station> startNextNextOptions = currentGraph.getAvailableStations(startNext, startingStation);
+        ArrayList<Station> startNextNextOptions = graph.getAvailableStations(startNext, startingStation);
         startNextNext = startNextNextOptions.get(rng.nextInt(startNextNextOptions.size()));
     }
 
