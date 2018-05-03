@@ -82,11 +82,21 @@ public class Game {
         if (s < velocity) {
             newXPos = to.getX();
             newYPos = to.getY();
+            if (fieldObject instanceof Train) {
+                updateStations((Train) fieldObject);
+            }
         } else {
             newXPos = fieldObject.getX() + (dx * velocity) / s;
             newYPos = fieldObject.getY() + (dy * velocity) / s;
         }
         fieldObject.moveTo(newXPos, newYPos);
+    }
+
+    private void updateStations(Train train) {
+        train.setPreviousStation(train.getNextStation());
+        train.setNextStation(train.getNextNextStation());
+        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(train.getNextStation(), train.getPreviousStation());
+        train.setNextNextStation(nextNextOptions.get(new Random().nextInt(nextNextOptions.size())));
     }
 
     // Create the victims
