@@ -195,6 +195,10 @@ public class MapView extends JPanel {
         }
     }
 
+    /**
+     * Highlight the rail that the train is currently on, as well as
+     * the rail selected at the next intersection.
+     */
     private void highlightActiveRoute() {
         Station previous = game.getMainTrain().getPreviousStation();
         Station next = game.getMainTrain().getNextStation();
