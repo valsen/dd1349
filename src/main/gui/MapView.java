@@ -6,6 +6,8 @@ import main.world.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +32,6 @@ public class MapView extends JPanel {
     private Image fieldImage;
     private Image trainIcon;
     private Image scaledTrainIcon;
-    private Set<Train> trainsToDraw = new HashSet<>();
-    private Set<Station> stationsToDraw = new HashSet<>();
     private Map<Station, StationLabel> stationLabels = new HashMap<>();
     private int gridWidth, gridHeight;
     private double xScale, yScale;
@@ -60,6 +60,8 @@ public class MapView extends JPanel {
             System.out.println("Failed to load all icons.");
         }
         scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
+        getActionMap().put("toggle route", new ToggleRouteAction());
     }
 
     /**
@@ -79,7 +81,7 @@ public class MapView extends JPanel {
         if(!isVisible()) {
             setVisible(true);
         }
-        addStations();
+        //addStations();
         createLabels();
         preparePaint();
     }
@@ -99,19 +101,13 @@ public class MapView extends JPanel {
         repaint();
     }
 
-    /**
-     * Create list of all stations to draw.
-     */
-    private void addStations() {
-        stationsToDraw.addAll(game.getCurrentGraph().getStations());
-    }
 
     /**
      * Create and add labels for each station. Labels are
      * either straight or rotated.
      */
     private void createLabels() {
-        for (Station station : stationsToDraw) {
+        for (Station station : game.getCurrentGraph().getStations()) {
             stationLabels.put(station, new StationLabel(station.getName(), station.getOrientationDegrees()));
         }
     }
@@ -163,7 +159,7 @@ public class MapView extends JPanel {
      * Paint all stations on the field.
      */
     private void drawStations() {
-        for (Station station : stationsToDraw) {
+        for (Station station : game.getCurrentGraph().getStations()) {
             drawCenteredStation(station.getRoundedX(), station.getRoundedY());
         }
     }
@@ -207,11 +203,21 @@ public class MapView extends JPanel {
         g2.drawLine(next.getRoundedX(), next.getRoundedY(), nextNext.getRoundedX(), nextNext.getRoundedY());
     }
 
+    class ToggleRouteAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Train train = game.getMainTrain();
+            ArrayList<Station> available = currentGraph.getAvailableStations(train.getNextStation(), train.getPreviousStation());
+            train.toggleRoute(available);
+        }
+    }
+
     /**
      * Paint station labels on map.
      */
     private void drawStationLabels() {
-        for (Station station : stationsToDraw) {
+        for (Station station : game.getCurrentGraph().getStations()) {
             int xPixel = (int) Math.round(station.getX() * xScale);
             int yPixel = (int) Math.round(station.getY() * yScale);
             StationLabel label = stationLabels.get(station);
