@@ -93,6 +93,7 @@ public class MapView extends JPanel {
             preparePaint();
         }
         drawBackground();
+        highlightActiveRoute();
         drawTrain();
         drawVictims();
         repaint();
@@ -195,6 +196,15 @@ public class MapView extends JPanel {
                 g2.drawLine(x1, y1, x2, y2);
             }
         }
+    }
+
+    private void highlightActiveRoute() {
+        Station previous = game.getMainTrain().getPreviousStation();
+        Station next = game.getMainTrain().getNextStation();
+        Station nextNext = game.getMainTrain().getNextNextStation();
+        g2.setColor(ACTIVE_RAIL_COLOR);
+        g2.drawLine(previous.getRoundedX(), previous.getRoundedY(), next.getRoundedX(), next.getRoundedY());
+        g2.drawLine(next.getRoundedX(), next.getRoundedY(), nextNext.getRoundedX(), nextNext.getRoundedY());
     }
 
     /**
