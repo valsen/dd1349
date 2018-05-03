@@ -196,8 +196,8 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Highlight the rail that the train is currently on, as well as
-     * the rail selected at the next intersection.
+     * Highlight the rail from the train's current position
+     * to the next-next station.
      */
     private void highlightActiveRoute() {
         Train train = game.getMainTrain();
