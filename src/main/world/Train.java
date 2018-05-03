@@ -13,7 +13,9 @@ public class Train extends FieldObject {
     private int stationCounter = 0;
     private Random rng;
     private String name;
+    private Station previousStation;
     private Station nextStation;
+    private Station nextNextStation;
 
     /**
      * Creates a train at the specified location.
@@ -22,12 +24,28 @@ public class Train extends FieldObject {
         super(x, y);
     }
 
-    /**
-     * Sets the next station for this train.
-     * @param k -1 if this train is moving backwards. 1 if moving forward.
-     */
-    private void setNextStation(int k) {
-        // TODO
+    public Station getPreviousStation() {
+        return previousStation;
+    }
+
+    public Station getNextStation() {
+        return nextStation;
+    }
+
+    public Station getNextNextStation() {
+        return nextNextStation;
+    }
+
+    public void setPreviousStation(Station previousStation) {
+        this.previousStation = previousStation;
+    }
+
+    public void setNextStation(Station nextStation) {
+        this.nextStation = nextStation;
+    }
+
+    public void setNextNextStation(Station nextNextStation) {
+        this.nextNextStation = nextNextStation;
     }
 
     public boolean isAtStation() {

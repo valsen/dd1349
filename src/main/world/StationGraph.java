@@ -19,7 +19,7 @@ public abstract class StationGraph {
 
     private ArrayList<Station> stations = new ArrayList<>();
     private HashMap<Station, ArrayList<Station>> connections;
-    private Location startingLocation;
+    protected Station startingStation, startNext, startNextNext;
     protected File stationsFile;
     protected File connectionsFile;
     protected File victimsFile;
@@ -126,5 +126,17 @@ public abstract class StationGraph {
 
     public File getVictimsFile() {
         return victimsFile;
+    }
+
+    public Station getStartingStation() {
+        return startingStation;
+    }
+
+    public Station getStartNext() {
+        return startNext;
+    }
+
+    public Station getStartNextNext() {
+        return startNextNext;
     }
 }

@@ -2,9 +2,8 @@ package main.world;
 
 public abstract class FieldObject {
 
-    private int xPos, yPos;
-    private int velocity = 10;
-
+    private double xPos, yPos;
+    private int velocity = 2;
 
     public FieldObject(int x, int y) {
         this.xPos = x;
@@ -14,24 +13,31 @@ public abstract class FieldObject {
     /**
      * @return The row of this object.
      */
-    public int getY() {
+    public double getY() {
         return yPos;
     }
 
     /**
      * @return The column of this object.
      */
-    public int getX() {
+    public double getX() {
         return xPos;
     }
 
-    private int getVelocity() {
+    public int getVelocity() {
         return velocity;
     }
 
-    public void moveTo(int x, int y) {
+    public void moveTo(double x, double y) {
         xPos = x;
         yPos = y;
     }
 
+    public int getRoundedX() {
+        return (int) Math.round(xPos);
+    }
+
+    public int getRoundedY() {
+        return (int) Math.round(yPos);
+    }
 }

@@ -6,8 +6,6 @@ import main.world.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +93,8 @@ public class MapView extends JPanel {
             preparePaint();
         }
         drawBackground();
-        drawTrains();
+        drawTrain();
+        drawVictims();
         repaint();
     }
 
@@ -139,7 +138,6 @@ public class MapView extends JPanel {
 
             drawLinesBetweenAllStations();
             drawStations();
-            drawVictims();
             drawNewBackground();
             drawStationLabels();
     }
@@ -165,7 +163,7 @@ public class MapView extends JPanel {
      */
     private void drawStations() {
         for (Station station : stationsToDraw) {
-            drawCenteredStation(station.getX(), station.getY());
+            drawCenteredStation(station.getRoundedX(), station.getRoundedY());
         }
     }
 
@@ -267,10 +265,8 @@ public class MapView extends JPanel {
     /**
      * Draw the trains.
      */
-    private void drawTrains() {
-        for(Train train : trainsToDraw) {
-            drawCenteredTrain(train.getX(), train.getY());
-        }
+    private void drawTrain() {
+        drawCenteredTrain(game.getMainTrain().getRoundedX(), game.getMainTrain().getRoundedY());
     }
 
     /**
@@ -290,7 +286,7 @@ public class MapView extends JPanel {
      */
     private void drawVictims() {
         for (Victim victim : game.getVictims()) {
-            drawCenteredVictim(victim, victim.getX(), victim.getY());
+            drawCenteredVictim(victim, victim.getRoundedX(), victim.getRoundedY());
         }
     }
 

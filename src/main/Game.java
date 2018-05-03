@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -23,6 +24,7 @@ public class Game {
 
     private ArrayList<StationGraph> graphs = new ArrayList<>();
     private StationGraph currentGraph;
+    private Station startingStation, startNext, startNextNext;
     private Train mainTrain;
     private GUI gui;
     private Timer timer;
@@ -36,9 +38,13 @@ public class Game {
     public Game() {
         graphs.add(new TestGraph());
         currentGraph = graphs.get(0);
-        mainTrain = new Train(0, 0);
         gui = new GUI(this, WIDTH, DEPTH);
         createVictims(currentGraph);
+        setStartingStations(currentGraph);
+        mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
+        mainTrain.setPreviousStation(startingStation);
+        mainTrain.setNextStation(startNext);
+        mainTrain.setNextNextStation(startNextNext);
     }
 
     public void run() {
@@ -48,6 +54,7 @@ public class Game {
             public void actionPerformed(ActionEvent e) {
                 if (running) {
                     gui.getMap().updateView();
+                    moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
                 }
             }
         });
@@ -68,17 +75,16 @@ public class Game {
     }
 
     private void moveTowards(FieldObject fieldObject, Station to, double velocity) {
-        int dx = to.getX() - fieldObject.getX();
-        int dy = to.getY() - fieldObject.getY();
-        int newXPos, newYPos;
-        if (dx == 0) {
-            newXPos = fieldObject.getX();
-            newYPos = to.getY() > fieldObject.getY() ? (int) round(fieldObject.getY() + velocity) : (int) round(fieldObject.getY() - velocity);
-        }
-        else {
-            double angle = atan2(dy, dx);
-            newXPos = (int) (fieldObject.getX() + cos(angle) * velocity);
-            newYPos = (int) (fieldObject.getY() + sin(angle) * velocity);
+        double dx = to.getX() - fieldObject.getX();
+        double dy = to.getY() - fieldObject.getY();
+        double s = sqrt(dx * dx + dy * dy);
+        double newXPos, newYPos;
+        if (s < velocity) {
+            newXPos = to.getX();
+            newYPos = to.getY();
+        } else {
+            newXPos = fieldObject.getX() + (dx * velocity) / s;
+            newYPos = fieldObject.getY() + (dy * velocity) / s;
         }
         fieldObject.moveTo(newXPos, newYPos);
     }
@@ -118,17 +124,31 @@ public class Game {
 
     // Helper method to set location of victim.
     private Location initializePosition(Station from, Station to, double ratio) {
-        int dx = to.getX() - from.getX();
-        int dy = (to.getY() - from.getY());
+        double dx = to.getX() - from.getX();
+        double dy = (to.getY() - from.getY());
         double hyp = sqrt(pow(dx,2) + pow(dy, 2));
         double angle = atan2(dy, dx);
-        int victimXPos = (int) (from.getX() + cos(angle) * hyp * ratio);
-        int victimYPos = (int) (from.getY() + sin(angle) * hyp * ratio);
-        return new Location(victimYPos, victimXPos);
+        double victimXPos = (from.getX() + cos(angle) * hyp * ratio);
+        double victimYPos = (from.getY() + sin(angle) * hyp * ratio);
+        return new Location((int) round(victimYPos), (int) round(victimXPos));
+    }
+
+    private void setStartingStations(StationGraph graph) {
+        Random rng = new Random();
+        startingStation = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
+        ArrayList<Station> startNextOptions = currentGraph.getAvailableStations(startingStation, null);
+        System.out.println(startNextOptions);
+        startNext = startNextOptions.get(rng.nextInt(startNextOptions.size()));
+        ArrayList<Station> startNextNextOptions = currentGraph.getAvailableStations(startNext, startingStation);
+        startNextNext = startNextNextOptions.get(rng.nextInt(startNextNextOptions.size()));
     }
 
     public ArrayList<Victim> getVictims() {
         return victims;
+    }
+
+    public Train getMainTrain() {
+        return mainTrain;
     }
 
 }
