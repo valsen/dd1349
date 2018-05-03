@@ -81,7 +81,6 @@ public class MapView extends JPanel {
         if(!isVisible()) {
             setVisible(true);
         }
-        //addStations();
         createLabels();
         preparePaint();
     }
@@ -96,8 +95,9 @@ public class MapView extends JPanel {
         }
         drawBackground();
         highlightActiveRoute();
-        drawTrain();
+        drawStations();
         drawVictims();
+        drawTrain();
         repaint();
     }
 
@@ -134,8 +134,9 @@ public class MapView extends JPanel {
             xScale = yScale = min(xScale, yScale);
 
             drawLinesBetweenAllStations();
-            drawStations();
             drawNewBackground();
+            highlightActiveRoute();
+            drawStations();
             drawStationLabels();
     }
 
@@ -168,7 +169,7 @@ public class MapView extends JPanel {
      * Paint a station on the field with the middle of it at the supplied position.
      */
     private void drawCenteredStation(int x, int y) {
-        int radius = 4;
+        int radius = 10;
         x = (int) (x * xScale - (radius / 2) + xScale / 2);
         y = (int) (y * yScale - (radius / 2) + yScale / 2);
         g2.setColor(Color.WHITE);
@@ -198,11 +199,20 @@ public class MapView extends JPanel {
         Station previous = game.getMainTrain().getPreviousStation();
         Station next = game.getMainTrain().getNextStation();
         Station nextNext = game.getMainTrain().getNextNextStation();
+        int previousXPos = (int) (previous.getX() * xScale + (xScale / 2));
+        int previousYPos = (int) (previous.getY() * yScale + (yScale / 2));
+        int nextXPos = (int) (next.getX() * xScale + (xScale / 2));
+        int nextYPos = (int) (next.getY() * yScale + (yScale / 2));
+        int nextNextXPos = (int) (nextNext.getX() * xScale + (xScale / 2));
+        int nextNextYPos = (int) (nextNext.getY() * yScale + (yScale / 2));
         g2.setColor(ACTIVE_RAIL_COLOR);
-        g2.drawLine(previous.getRoundedX(), previous.getRoundedY(), next.getRoundedX(), next.getRoundedY());
-        g2.drawLine(next.getRoundedX(), next.getRoundedY(), nextNext.getRoundedX(), nextNext.getRoundedY());
+        g2.drawLine(previousXPos, previousYPos, nextXPos, nextYPos);
+        g2.drawLine(nextXPos, nextYPos, nextNextXPos, nextNextYPos);
     }
 
+    /**
+     * Action performed when pressing the spacebar in gameplay.
+     */
     class ToggleRouteAction extends AbstractAction {
 
         @Override

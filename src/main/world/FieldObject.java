@@ -3,7 +3,7 @@ package main.world;
 public abstract class FieldObject {
 
     private double xPos, yPos;
-    private double velocity = 1;
+    private double velocity = 2;
 
     public FieldObject(int x, int y) {
         this.xPos = x;
