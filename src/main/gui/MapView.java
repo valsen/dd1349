@@ -21,9 +21,9 @@ public class MapView extends JPanel {
     
     private static final Color INACTIVE_RAIL_COLOR = new Color(160, 160, 160);
     private static final Color ACTIVE_RAIL_COLOR = new Color(255, 101, 162);
-    private static final int TRAIN_SIZE = 30;
+    private static final int TRAIN_SIZE = 50;
     private static final int STATION_SIZE = 15;
-    private static final int VICTIM_SIZE = 50;
+    private static final int VICTIM_SIZE = 60;
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
     private Game game;

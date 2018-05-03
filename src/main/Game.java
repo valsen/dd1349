@@ -55,6 +55,9 @@ public class Game {
                 if (running) {
                     gui.getMap().updateView();
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
+                    for (Victim victim : victims) {
+                        moveTowards(victim, victim.getNextStation(), victim.getVelocity());
+                    }
                 }
             }
         });
@@ -82,9 +85,7 @@ public class Game {
         if (s < velocity) {
             newXPos = to.getX();
             newYPos = to.getY();
-            if (fieldObject instanceof Train) {
-                updateStations((Train) fieldObject);
-            }
+            updateStations(fieldObject);
         } else {
             newXPos = fieldObject.getX() + (dx * velocity) / s;
             newYPos = fieldObject.getY() + (dy * velocity) / s;
@@ -92,11 +93,11 @@ public class Game {
         fieldObject.moveTo(newXPos, newYPos);
     }
 
-    private void updateStations(Train train) {
-        train.setPreviousStation(train.getNextStation());
-        train.setNextStation(train.getNextNextStation());
-        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(train.getNextStation(), train.getPreviousStation());
-        train.setNextNextStation(nextNextOptions.get(new Random().nextInt(nextNextOptions.size())));
+    private void updateStations(FieldObject fieldObject) {
+        fieldObject.setPreviousStation(fieldObject.getNextStation());
+        fieldObject.setNextStation(fieldObject.getNextNextStation());
+        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(fieldObject.getNextStation(), fieldObject.getPreviousStation());
+        fieldObject.setNextNextStation(nextNextOptions.get(new Random().nextInt(nextNextOptions.size())));
     }
 
     // Create the victims
@@ -115,7 +116,13 @@ public class Game {
                     double ratio = rnd.nextDouble() * 0.6 + 0.2;
                     if (fromStation != null && toStation != null) {
                         Location victimLocation = initializePosition(fromStation, toStation, ratio);
-                        victims.add(new Victim(victimLocation.getX(), victimLocation.getY(), victimName, victimIcon));
+                        Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName, victimIcon);
+                        victim.setPreviousStation(fromStation);
+                        victim.setNextStation(toStation);
+                        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
+                        Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
+                        victim.setNextNextStation(nextNext);
+                        victims.add(victim);
                         System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
                                 victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
                     } else {

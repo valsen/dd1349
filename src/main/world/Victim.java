@@ -1,6 +1,7 @@
 package main.world;
 
 import java.awt.*;
+import java.util.Random;
 
 public class Victim extends FieldObject {
 
@@ -11,6 +12,7 @@ public class Victim extends FieldObject {
         super(x, y);
         this.name = name;
         this.icon = icon;
+        setVelocity(new Random().nextDouble() * 0.4);
     }
 
     public String getName() {
