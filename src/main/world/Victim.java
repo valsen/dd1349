@@ -7,8 +7,8 @@ public class Victim extends FieldObject {
     private String name;
     private Image icon;
 
-    public Victim(Field field, Location location, String name, Image icon) {
-        super(field, location);
+    public Victim(int x, int y, String name, Image icon) {
+        super(x, y);
         this.name = name;
         this.icon = icon;
     }
