@@ -1,18 +1,20 @@
 package main.world;
 
 import java.awt.*;
+import java.io.File;
 
 public class Station extends FieldObject {
 
     private String name;
     private int orientationDegrees;
+    private static final File iconFile = new File("src/Sprites/röd.png");
 
     /**
      * Construct a station at this location.
      * @param name The name of the main.world.Station.
      */
     public Station(int x, int y, String name, int orientationDegrees) {
-        super(x, y);
+        super(x, y, iconFile);
         this.name = name;
         this.orientationDegrees = orientationDegrees;
     }

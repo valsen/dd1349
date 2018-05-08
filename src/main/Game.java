@@ -47,7 +47,7 @@ public class Game {
         try {
             Image trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
         } catch (IOException e) {}
-        mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY(), trainIcon);
+        mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
         mainTrain.setPreviousStation(startingStation);
         mainTrain.setNextStation(startNext);
         mainTrain.setNextNextStation(startNextNext);
@@ -117,27 +117,23 @@ public class Game {
                 Station fromStation = currentGraph.findStation(victimInfo[1]);
                 Station toStation = currentGraph.findStation(victimInfo[2]);
                 String imageFileName = victimInfo[3];
-                try {
-                    Image victimIcon = ImageIO.read(new File("src/Sprites/victimIcons/" + imageFileName));
-                    double ratio = rnd.nextDouble() * 0.6 + 0.2;
-                    if (fromStation != null && toStation != null) {
-                        Location victimLocation = initializePosition(fromStation, toStation, ratio);
-                        Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName, victimIcon);
-                        victim.setPreviousStation(fromStation);
-                        victim.setNextStation(toStation);
-                        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
-                        Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
-                        victim.setNextNextStation(nextNext);
-                        victims.add(victim);
-                        System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
-                                victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
-                    } else {
-                        System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
-                                victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
-                                "Please ensure spelling of stations is correct.");
-                    }
-                } catch (IOException e) {
-                    System.out.println("No image found for " + victimName + ". Will not spawn victim.");
+                double ratio = rnd.nextDouble() * 0.6 + 0.2;
+                if (fromStation != null && toStation != null) {
+                    Location victimLocation = initializePosition(fromStation, toStation, ratio);
+                    Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName,
+                            "src/Sprites/victimIcons/" + imageFileName);
+                    victim.setPreviousStation(fromStation);
+                    victim.setNextStation(toStation);
+                    ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
+                    Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
+                    victim.setNextNextStation(nextNext);
+                    victims.add(victim);
+                    System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
+                            victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
+                } else {
+                    System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
+                            victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
+                            "Please ensure spelling of stations is correct.");
                 }
             }
         } catch(FileNotFoundException e) {
