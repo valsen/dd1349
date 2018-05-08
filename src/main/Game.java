@@ -159,6 +159,11 @@ public class Game {
         startNextNext = startNextNextOptions.get(rng.nextInt(startNextNextOptions.size()));
     }
 
+    public void toggleMainRoute() {
+        ArrayList<Station> available = currentGraph.getAvailableStations(mainTrain.getNextStation(), mainTrain.getPreviousStation());
+        mainTrain.toggleRoute(available);
+    }
+
     public ArrayList<Victim> getVictims() {
         return victims;
     }

@@ -221,9 +221,7 @@ public class MapView extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Train train = game.getMainTrain();
-            ArrayList<Station> available = currentGraph.getAvailableStations(train.getNextStation(), train.getPreviousStation());
-            train.toggleRoute(available);
+            game.toggleMainRoute();
         }
     }
 

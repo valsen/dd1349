@@ -12,7 +12,7 @@ public class Victim extends FieldObject {
         super(x, y);
         this.name = name;
         this.icon = icon;
-        setVelocity(new Random().nextDouble() * 0.4);
+        setVelocity(new Random().nextDouble() * 0.5);
     }
 
     public String getName() {
