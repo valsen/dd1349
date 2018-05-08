@@ -104,6 +104,6 @@ public abstract class FieldObject {
     }
 
     public int getCollisionRadius() {
-        return Math.max(icon.getWidth(null), icon.getHeight(null));
+        return Math.min(icon.getWidth(null), icon.getHeight(null));
     }
 }
