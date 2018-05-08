@@ -196,21 +196,21 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Highlight the rail that the train is currently on, as well as
-     * the rail selected at the next intersection.
+     * Highlight the rail from the train's current position
+     * to the next-next station.
      */
     private void highlightActiveRoute() {
-        Station previous = game.getMainTrain().getPreviousStation();
-        Station next = game.getMainTrain().getNextStation();
-        Station nextNext = game.getMainTrain().getNextNextStation();
-        int previousXPos = (int) (previous.getX() * xScale + (xScale / 2));
-        int previousYPos = (int) (previous.getY() * yScale + (yScale / 2));
+        Train train = game.getMainTrain();
+        Station next = train.getNextStation();
+        Station nextNext = train.getNextNextStation();
+        int trainXPos = (int) (train.getX() * xScale + (xScale / 2));
+        int trainYPos = (int) (train.getY() * yScale + (yScale / 2));
         int nextXPos = (int) (next.getX() * xScale + (xScale / 2));
         int nextYPos = (int) (next.getY() * yScale + (yScale / 2));
         int nextNextXPos = (int) (nextNext.getX() * xScale + (xScale / 2));
         int nextNextYPos = (int) (nextNext.getY() * yScale + (yScale / 2));
         g2.setColor(ACTIVE_RAIL_COLOR);
-        g2.drawLine(previousXPos, previousYPos, nextXPos, nextYPos);
+        g2.drawLine(trainXPos, trainYPos, nextXPos, nextYPos);
         g2.drawLine(nextXPos, nextYPos, nextNextXPos, nextNextYPos);
     }
 
