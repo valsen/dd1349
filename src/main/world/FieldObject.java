@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import static java.lang.Math.round;
 
 public abstract class FieldObject {
 
@@ -14,6 +15,7 @@ public abstract class FieldObject {
     private Station nextNextStation;
     private File iconFile;
     private Image icon;
+    private static final int MAX_SIZE = 60;
 
     public FieldObject(int x, int y, File iconFile) {
         this.xPos = x;
@@ -89,6 +91,13 @@ public abstract class FieldObject {
     private void setIcon(File iconFile) {
         try {
             icon = ImageIO.read(iconFile);
+            // rescale to allowed properties
+            if(icon.getWidth(null) > MAX_SIZE || icon.getHeight(null) > MAX_SIZE) {
+                int height = icon.getHeight(null);
+                int width = icon.getWidth(null);
+                double scalingFactor = (double) MAX_SIZE / (double) Math.max(icon.getHeight(null), icon.getWidth(null));
+                icon = icon.getScaledInstance((int)round(width*scalingFactor), (int)round(height*scalingFactor), 0);
+            }
         } catch (IOException e) {
             System.out.println("Could not read icon file");
         }

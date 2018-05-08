@@ -325,10 +325,10 @@ public class MapView extends JPanel {
      * @param y the row of the victim.
      */
     private void drawCenteredVictim(Victim victim, int x, int y) {
-        x = (int) (x * xScale - VICTIM_SIZE / 2 + xScale / 2);
-        y = (int) (y * xScale - VICTIM_SIZE / 2 + yScale / 2);
-        Image scaledVictimIcon = victim.getIcon().getScaledInstance(VICTIM_SIZE, VICTIM_SIZE, 0);
-        g.drawImage(scaledVictimIcon, x, y, null);
+        Image victimIcon = victim.getIcon();
+        x = (x - victimIcon.getWidth(null) / 2);
+        y = (y - victimIcon.getHeight(null) / 2);
+        g.drawImage(victimIcon, x, y, null);
     }
 
     /**
