@@ -6,8 +6,6 @@ import main.world.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +93,8 @@ public class MapView extends JPanel {
             preparePaint();
         }
         drawBackground();
-        drawTrains();
+        drawTrain();
+        drawVictims();
         repaint();
     }
 
@@ -139,7 +138,6 @@ public class MapView extends JPanel {
 
             drawLinesBetweenAllStations();
             drawStations();
-            drawVictims();
             drawNewBackground();
             drawStationLabels();
     }
@@ -165,7 +163,7 @@ public class MapView extends JPanel {
      */
     private void drawStations() {
         for (Station station : stationsToDraw) {
-            drawCenteredStation(station.getCol(), station.getRow());
+            drawCenteredStation(station.getRoundedX(), station.getRoundedY());
         }
     }
 
@@ -187,12 +185,12 @@ public class MapView extends JPanel {
         int x1, x2, y1, y2;
         for (int i = 0; i < game.getCurrentGraph().getStations().size() - 1; i++) {
             Station from = currentGraph.getStations().get(i);
-            x1 = (int) (from.getCol() * xScale + (xScale / 2));
-            y1 = (int) (from.getRow() * yScale + (yScale / 2));
+            x1 = (int) (from.getX() * xScale + (xScale / 2));
+            y1 = (int) (from.getY() * yScale + (yScale / 2));
 
             for(Station to : game.getCurrentGraph().getAvailableStations(from, null)) {
-                x2 = (int) (to.getCol() * xScale + (xScale / 2));
-                y2 = (int) (to.getRow() * yScale + (yScale / 2));
+                x2 = (int) (to.getX() * xScale + (xScale / 2));
+                y2 = (int) (to.getY() * yScale + (yScale / 2));
                 g2.setColor(INACTIVE_RAIL_COLOR);
                 g2.drawLine(x1, y1, x2, y2);
             }
@@ -204,8 +202,8 @@ public class MapView extends JPanel {
      */
     private void drawStationLabels() {
         for (Station station : stationsToDraw) {
-            int xPixel = (int) Math.round(station.getCol() * xScale);
-            int yPixel = (int) Math.round(station.getRow() * yScale);
+            int xPixel = (int) Math.round(station.getX() * xScale);
+            int yPixel = (int) Math.round(station.getY() * yScale);
             StationLabel label = stationLabels.get(station);
             if (label.getOrientationDegrees() != -1) {
                 setLabelLocation(label, xPixel, yPixel);
@@ -267,10 +265,8 @@ public class MapView extends JPanel {
     /**
      * Draw the trains.
      */
-    private void drawTrains() {
-        for(Train train : trainsToDraw) {
-            drawCenteredTrain(train.getCol(), train.getRow());
-        }
+    private void drawTrain() {
+        drawCenteredTrain(game.getMainTrain().getRoundedX(), game.getMainTrain().getRoundedY());
     }
 
     /**
@@ -289,8 +285,8 @@ public class MapView extends JPanel {
      * Draw the victims.
      */
     private void drawVictims() {
-        for (Victim victim : game.getCurrentGraph().getVictims()) {
-            drawCenteredVictim(victim, victim.getCol(), victim.getRow());
+        for (Victim victim : game.getVictims()) {
+            drawCenteredVictim(victim, victim.getRoundedX(), victim.getRoundedY());
         }
     }
 

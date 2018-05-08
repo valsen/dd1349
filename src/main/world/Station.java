@@ -9,11 +9,10 @@ public class Station extends FieldObject {
 
     /**
      * Construct a station at this location.
-     * @param location The location of the station.
      * @param name The name of the main.world.Station.
      */
-    public Station(Field field, Location location, String name, int orientationDegrees) {
-        super(field, location);
+    public Station(int x, int y, String name, int orientationDegrees) {
+        super(x, y);
         this.name = name;
         this.orientationDegrees = orientationDegrees;
     }

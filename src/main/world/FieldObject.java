@@ -2,32 +2,42 @@ package main.world;
 
 public abstract class FieldObject {
 
-    private Field field;
-    private Location location;
+    private double xPos, yPos;
+    private int velocity = 2;
 
-    /**
-     * Create a FieldObject and place at the specified location in the correct field.
-     * @param field The field of the object.
-     * @param location The location of the object.
-     */
-    public FieldObject(Field field, Location location) {
-        this.field = field;
-        this.location = location;
-        field.place(this, location);
+    public FieldObject(int x, int y) {
+        this.xPos = x;
+        this.yPos = y;
     }
 
     /**
      * @return The row of this object.
      */
-    public int getRow() {
-        return location.getRow();
+    public double getY() {
+        return yPos;
     }
 
     /**
      * @return The column of this object.
      */
-    public int getCol() {
-        return location.getCol();
+    public double getX() {
+        return xPos;
     }
 
+    public int getVelocity() {
+        return velocity;
+    }
+
+    public void moveTo(double x, double y) {
+        xPos = x;
+        yPos = y;
+    }
+
+    public int getRoundedX() {
+        return (int) Math.round(xPos);
+    }
+
+    public int getRoundedY() {
+        return (int) Math.round(yPos);
+    }
 }

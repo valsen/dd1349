@@ -9,18 +9,18 @@ package main.world;
 public class Location
 {
     // Row and column positions.
-    private int row;
-    private int col;
+    private int y;
+    private int x;
 
     /**
-     * Represent a row and column.
-     * @param row The row.
-     * @param col The column.
+     * Represent a y and column.
+     * @param y The y.
+     * @param x The column.
      */
-    public Location(int row, int col)
+    public Location(int y, int x)
     {
-        this.row = row;
-        this.col = col;
+        this.y = y;
+        this.x = x;
     }
     
     /**
@@ -30,7 +30,7 @@ public class Location
     {
         if(obj instanceof Location) {
             Location other = (Location) obj;
-            return row == other.getRow() && col == other.getCol();
+            return y == other.getY() && x == other.getX();
         }
         else {
             return false;
@@ -38,38 +38,38 @@ public class Location
     }
     
     /**
-     * Return a string of the form row,column
+     * Return a string of the form y,column
      * @return A string representation of the location.
      */
     public String toString()
     {
-        return row + "," + col;
+        return y + "," + x;
     }
     
     /**
-     * Use the top 16 bits for the row value and the bottom for
+     * Use the top 16 bits for the y value and the bottom for
      * the column. Except for very big grids, this should give a
-     * unique hash code for each (row, col) pair.
+     * unique hash code for each (y, x) pair.
      * @return A hashcode for the location.
      */
     public int hashCode()
     {
-        return (row << 16) + col;
+        return (y << 16) + x;
     }
     
     /**
-     * @return The row.
+     * @return The y.
      */
-    public int getRow()
+    public int getY()
     {
-        return row;
+        return y;
     }
     
     /**
      * @return The column.
      */
-    public int getCol()
+    public int getX()
     {
-        return col;
+        return x;
     }
 }
