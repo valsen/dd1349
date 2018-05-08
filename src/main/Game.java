@@ -41,7 +41,13 @@ public class Game {
         gui = new GUI(this, WIDTH, DEPTH);
         createVictims(currentGraph);
         setStartingStations(currentGraph);
-        mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
+        createMainTrain();
+    }
+    private void createMainTrain() {
+        try {
+            Image trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
+        } catch (IOException e) {}
+        mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY(), trainIcon);
         mainTrain.setPreviousStation(startingStation);
         mainTrain.setNextStation(startNext);
         mainTrain.setNextNextStation(startNextNext);

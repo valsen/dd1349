@@ -1,5 +1,10 @@
 package main.world;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+
 public abstract class FieldObject {
 
     private double xPos, yPos;
@@ -7,10 +12,14 @@ public abstract class FieldObject {
     private Station previousStation;
     private Station nextStation;
     private Station nextNextStation;
+    private File iconFile;
+    private Image icon;
 
-    public FieldObject(int x, int y) {
+    public FieldObject(int x, int y, File iconFile) {
         this.xPos = x;
         this.yPos = y;
+        this.iconFile = iconFile;
+        setIcon(iconFile);
     }
 
     /**
@@ -70,5 +79,17 @@ public abstract class FieldObject {
 
     public void setNextNextStation(Station nextNextStation) {
         this.nextNextStation = nextNextStation;
+    }
+
+    public Image getIcon() {
+        return icon;
+    }
+
+    private void setIcon(File iconFile) {
+        try {
+            icon = ImageIO.read(iconFile);
+        } catch (IOException e) {
+            System.out.println("Could not read icon file");
+        }
     }
 }
