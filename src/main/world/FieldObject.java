@@ -20,6 +20,7 @@ public abstract class FieldObject {
         this.yPos = y;
         this.iconFile = iconFile;
         setIcon(iconFile);
+        System.out.println(getCollisionRadius());
     }
 
     /**
@@ -91,5 +92,9 @@ public abstract class FieldObject {
         } catch (IOException e) {
             System.out.println("Could not read icon file");
         }
+    }
+
+    public int getCollisionRadius() {
+        return Math.max(icon.getWidth(null), icon.getHeight(null));
     }
 }
