@@ -6,16 +6,14 @@ import main.world.graphs.TestGraph;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.Math.*;
 import static java.lang.Math.sin;
@@ -41,6 +39,12 @@ public class Game {
         gui = new GUI(this, WIDTH, DEPTH);
         createVictims(currentGraph);
         setStartingStations(currentGraph);
+        createMainTrain();
+    }
+    private void createMainTrain() {
+        try {
+            Image trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
+        } catch (IOException e) {}
         mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
         mainTrain.setPreviousStation(startingStation);
         mainTrain.setNextStation(startNext);
@@ -55,8 +59,14 @@ public class Game {
                 if (running) {
                     gui.getMap().updateView();
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
-                    for (Victim victim : victims) {
+                    Iterator it = victims.iterator();
+                    while (it.hasNext()) {
+                        // The victims list obiviously contains only victims
+                        Victim victim = (Victim) it.next();
                         moveTowards(victim, victim.getNextStation(), victim.getVelocity());
+                        if(doesCollide(victim, mainTrain)) {
+                            it.remove();
+                        }
                     }
                 }
             }
@@ -111,27 +121,23 @@ public class Game {
                 Station fromStation = currentGraph.findStation(victimInfo[1]);
                 Station toStation = currentGraph.findStation(victimInfo[2]);
                 String imageFileName = victimInfo[3];
-                try {
-                    Image victimIcon = ImageIO.read(new File("src/Sprites/victimIcons/" + imageFileName));
-                    double ratio = rnd.nextDouble() * 0.6 + 0.2;
-                    if (fromStation != null && toStation != null) {
-                        Location victimLocation = initializePosition(fromStation, toStation, ratio);
-                        Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName, victimIcon);
-                        victim.setPreviousStation(fromStation);
-                        victim.setNextStation(toStation);
-                        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
-                        Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
-                        victim.setNextNextStation(nextNext);
-                        victims.add(victim);
-                        System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
-                                victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
-                    } else {
-                        System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
-                                victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
-                                "Please ensure spelling of stations is correct.");
-                    }
-                } catch (IOException e) {
-                    System.out.println("No image found for " + victimName + ". Will not spawn victim.");
+                double ratio = rnd.nextDouble() * 0.6 + 0.2;
+                if (fromStation != null && toStation != null) {
+                    Location victimLocation = initializePosition(fromStation, toStation, ratio);
+                    Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName,
+                            "src/Sprites/victimIcons/" + imageFileName);
+                    victim.setPreviousStation(fromStation);
+                    victim.setNextStation(toStation);
+                    ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
+                    Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
+                    victim.setNextNextStation(nextNext);
+                    victims.add(victim);
+                    System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
+                            victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
+                } else {
+                    System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
+                            victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
+                            "Please ensure spelling of stations is correct.");
                 }
             }
         } catch(FileNotFoundException e) {
@@ -159,6 +165,11 @@ public class Game {
         startNextNext = startNextNextOptions.get(rng.nextInt(startNextNextOptions.size()));
     }
 
+    public void toggleMainRoute() {
+        ArrayList<Station> available = currentGraph.getAvailableStations(mainTrain.getNextStation(), mainTrain.getPreviousStation());
+        mainTrain.toggleRoute(available);
+    }
+
     public ArrayList<Victim> getVictims() {
         return victims;
     }
@@ -167,4 +178,24 @@ public class Game {
         return mainTrain;
     }
 
+    private boolean doesCollide(FieldObject a, FieldObject b) {
+        int radiusA = a.getCollisionRadius();
+        int radiusB = b.getCollisionRadius();
+        int dx = a.getRoundedX() - b.getRoundedX();
+        int dy = a.getRoundedY() - b.getRoundedY();
+        double dist = Math.sqrt(dx*dx + dy*dy);
+        if (onSameRail(a, b)) {
+            if (dist < radiusA || dist < radiusB) {
+                System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Return true if two FieldObjects are on the same rail (between the same stations)
+    private boolean onSameRail(FieldObject a, FieldObject b) {
+        return (a.getPreviousStation().equals(b.getPreviousStation()) && a.getNextStation().equals(b.getNextStation()))
+                || (a.getPreviousStation().equals(b.getNextStation())) && a.getNextStation().equals(b.getPreviousStation());
+    }
 }

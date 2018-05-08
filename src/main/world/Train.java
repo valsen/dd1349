@@ -1,5 +1,6 @@
 package main.world;
 
+import javax.imageio.ImageIO;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -13,13 +14,15 @@ public class Train extends FieldObject {
     private int stationCounter = 0;
     private Random rng;
     private String name;
+    private Image trainIcon;
+    private static final File icon = new File("src/Sprites/grön.png");
 
 
     /**
      * Creates a train at the specified location.
      */
     public Train(int x, int y) {
-        super(x, y);
+        super(x, y, icon);
     }
 
     public void toggleRoute(ArrayList<Station> list) {
@@ -33,7 +36,6 @@ public class Train extends FieldObject {
             }
         }
     }
-
 
 
     public boolean isAtStation() {

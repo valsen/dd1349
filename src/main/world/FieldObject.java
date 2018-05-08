@@ -1,5 +1,11 @@
 package main.world;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import static java.lang.Math.round;
+
 public abstract class FieldObject {
 
     private double xPos, yPos;
@@ -7,10 +13,16 @@ public abstract class FieldObject {
     private Station previousStation;
     private Station nextStation;
     private Station nextNextStation;
+    private File iconFile;
+    private Image icon;
+    private static final int MAX_SIZE = 60;
 
-    public FieldObject(int x, int y) {
+    public FieldObject(int x, int y, File iconFile) {
         this.xPos = x;
         this.yPos = y;
+        this.iconFile = iconFile;
+        setIcon(iconFile);
+        System.out.println(getCollisionRadius());
     }
 
     /**
@@ -70,5 +82,28 @@ public abstract class FieldObject {
 
     public void setNextNextStation(Station nextNextStation) {
         this.nextNextStation = nextNextStation;
+    }
+
+    public Image getIcon() {
+        return icon;
+    }
+
+    private void setIcon(File iconFile) {
+        try {
+            icon = ImageIO.read(iconFile);
+            // rescale to allowed properties
+            if(icon.getWidth(null) > MAX_SIZE || icon.getHeight(null) > MAX_SIZE) {
+                int height = icon.getHeight(null);
+                int width = icon.getWidth(null);
+                double scalingFactor = (double) MAX_SIZE / (double) Math.max(icon.getHeight(null), icon.getWidth(null));
+                icon = icon.getScaledInstance((int)round(width*scalingFactor), (int)round(height*scalingFactor), 0);
+            }
+        } catch (IOException e) {
+            System.out.println("Could not read icon file");
+        }
+    }
+
+    public int getCollisionRadius() {
+        return Math.min(icon.getWidth(null), icon.getHeight(null));
     }
 }
