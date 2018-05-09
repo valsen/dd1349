@@ -66,6 +66,10 @@ public class Game {
                         moveTowards(victim, victim.getNextStation(), victim.getVelocity());
                         if(doesCollide(victim, mainTrain)) {
                             it.remove();
+                            if(victims.isEmpty()) {
+                                gui.getMap().updateView();
+                                timer.stop();
+                            }
                         }
                     }
                 }

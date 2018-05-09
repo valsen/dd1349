@@ -326,8 +326,8 @@ public class MapView extends JPanel {
      */
     private void drawCenteredVictim(Victim victim, int x, int y) {
         Image victimIcon = victim.getIcon();
-        x = (x - victimIcon.getWidth(null) / 2);
-        y = (y - victimIcon.getHeight(null) / 2);
+        x = (int) (x * xScale - victimIcon.getWidth(null) / 2 + xScale/2);
+        y = (int) (y * yScale - victimIcon.getHeight(null) / 2 + yScale/2);
         g.drawImage(victimIcon, x, y, null);
     }
 
