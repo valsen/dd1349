@@ -113,7 +113,7 @@ public class Game {
 
         // increment score counter
         score++;
-        System.out.println("Score: " + score);
+        gui.getMap().updateScore(score);
     }
 
     // Create the victims
@@ -195,7 +195,7 @@ public class Game {
                 System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
                 // decrement score by 5;
                 score -= 5;
-                System.out.println("Score: " + score);
+                gui.getMap().updateScore(score);
                 return true;
             }
         }

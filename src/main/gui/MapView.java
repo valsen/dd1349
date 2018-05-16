@@ -26,6 +26,7 @@ public class MapView extends JPanel {
     private static final int VICTIM_SIZE = 60;
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
+    private JLabel scoreCounter;
     private Game game;
     private StationGraph currentGraph;
     private BufferedImage bgImage;
@@ -60,6 +61,13 @@ public class MapView extends JPanel {
             System.out.println("Failed to load all icons.");
         }
         scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        scoreCounter = new JLabel();
+        scoreCounter.setFont(getFont().deriveFont(16.0f));
+        scoreCounter.setText("Score: 0");
+        scoreCounter.setLocation(10, 10);
+        scoreCounter.setSize(scoreCounter.getPreferredSize());
+        scoreCounter.setForeground(Color.WHITE);
+        add(scoreCounter);
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
         getActionMap().put("toggle route", new ToggleRouteAction());
     }
@@ -373,5 +381,11 @@ public class MapView extends JPanel {
                 // npe is fine, means label was a duplicate and never added.
             }
         }
+    }
+
+    public void updateScore(int score) {
+        scoreCounter.setText("Score: " + score);
+        scoreCounter.setSize(scoreCounter.getPreferredSize());
+        System.out.println(score);
     }
 }
