@@ -26,6 +26,7 @@ public class Game {
     private Train mainTrain;
     private GUI gui;
     private Timer timer;
+    private int score;
     private boolean running = true;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
@@ -42,9 +43,6 @@ public class Game {
         createMainTrain();
     }
     private void createMainTrain() {
-        try {
-            Image trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
-        } catch (IOException e) {}
         mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
         mainTrain.setPreviousStation(startingStation);
         mainTrain.setNextStation(startNext);
@@ -112,6 +110,10 @@ public class Game {
         fieldObject.setNextStation(fieldObject.getNextNextStation());
         ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(fieldObject.getNextStation(), fieldObject.getPreviousStation());
         fieldObject.setNextNextStation(nextNextOptions.get(new Random().nextInt(nextNextOptions.size())));
+
+        // increment score counter
+        score++;
+        System.out.println("Score: " + score);
     }
 
     // Create the victims
@@ -191,6 +193,9 @@ public class Game {
         if (onSameRail(a, b)) {
             if (dist < radiusA || dist < radiusB) {
                 System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
+                // decrement score by 5;
+                score -= 5;
+                System.out.println("Score: " + score);
                 return true;
             }
         }
