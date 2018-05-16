@@ -1,25 +1,22 @@
 package main.world;
 
 import java.awt.*;
+import java.io.File;
 import java.util.Random;
 
 public class Victim extends FieldObject {
 
     private String name;
-    private Image icon;
 
-    public Victim(int x, int y, String name, Image icon) {
-        super(x, y);
+    public Victim(int x, int y, String name, String filepath) {
+        super(x, y, new File(filepath));
         this.name = name;
-        this.icon = icon;
-        setVelocity(new Random().nextDouble() * 0.4);
+        setVelocity(new Random().nextDouble() * 0.5);
     }
 
     public String getName() {
         return name;
     }
 
-    public Image getIcon() {
-        return icon;
-    }
+
 }
