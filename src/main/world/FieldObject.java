@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+
 import static java.lang.Math.round;
 
 public abstract class FieldObject {
@@ -13,6 +15,7 @@ public abstract class FieldObject {
     private Station previousStation;
     private Station nextStation;
     private Station nextNextStation;
+    private double distanceQuotient;
     private File iconFile;
     private Image icon;
     private static final int MAX_SIZE = 60;
@@ -101,6 +104,22 @@ public abstract class FieldObject {
         } catch (IOException e) {
             System.out.println("Could not read icon file");
         }
+    }
+
+    public void updateDistanceQuotient() {
+        double distanceTotal = getDistance(previousStation, nextStation);
+        double distanceCovered = getDistance(previousStation, this);
+        distanceQuotient = distanceCovered / distanceTotal;
+    }
+
+    public static double getDistance(FieldObject a, FieldObject b) {
+        double dx = a.getX()-b.getX();
+        double dy = b.getY()-b.getY();
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    public double getDistanceQuotient() {
+        return distanceQuotient;
     }
 
     public int getCollisionRadius() {

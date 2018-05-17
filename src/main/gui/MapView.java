@@ -107,9 +107,11 @@ public class MapView extends JPanel {
         if (!getSize().equals(size)) {
             preparePaint();
         }
-        drawBackground();
+        eraseMap();
+        drawLinesBetweenAllStations();
         highlightActiveRoute();
         drawStations();
+        drawStationLabels();
         drawVictims();
         drawTrain();
         repaint();

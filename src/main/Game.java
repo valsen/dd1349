@@ -20,11 +20,14 @@ import static java.lang.Math.sin;
 
 public class Game {
 
+    private Random rng = new Random(667);
     private ArrayList<StationGraph> graphs = new ArrayList<>();
     private StationGraph currentGraph;
     private Station startingStation, startNext, startNextNext;
     private Train mainTrain;
     private GUI gui;
+    private ArrayList<String> victimNames = new ArrayList<>();
+    private HashMap<String, String> victimStrings = new HashMap<>();
     private Timer timer;
     private Timer countDownTimer;
     private int score;
@@ -34,6 +37,7 @@ public class Game {
     public static final int WIDTH = 800;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
+    public static final int MAX_VICTIMS = 8;
 
     public Game() {
         graphs.add(new TestGraph());
@@ -48,6 +52,7 @@ public class Game {
         mainTrain.setPreviousStation(startingStation);
         mainTrain.setNextStation(startNext);
         mainTrain.setNextNextStation(startNextNext);
+        mainTrain.updateDistanceQuotient();
     }
 
     public void run() {
@@ -74,13 +79,25 @@ public class Game {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (running) {
-                    gui.getMap().updateView();
+                    if (rng.nextDouble() < 0.01 && victims.size() <= MAX_VICTIMS) {
+                        Station from = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
+                        ArrayList<Station> nextOptions = currentGraph.getAvailableStations(from, null);
+                        Station to = nextOptions.get(rng.nextInt(nextOptions.size()));
+                        spawnVictimBetweenStations(from, to);
+                    }
+                    for (Station station : currentGraph.getStations()) {
+                        moveCircular(station, gui.getMap().getWidth()/2, gui.getMap().getHeight()/2, station.getVelocity());
+                    }
+                    adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
+                    mainTrain.updateDistanceQuotient();
                     Iterator it = victims.iterator();
                     while (it.hasNext()) {
                         // The victims list obiviously contains only victims
                         Victim victim = (Victim) it.next();
+                        adjustLocation(victim);
                         moveTowards(victim, victim.getNextStation(), victim.getVelocity());
+                        victim.updateDistanceQuotient();
                         if(doesCollide(victim, mainTrain)) {
                             it.remove();
                             if(victims.isEmpty()) {
@@ -90,6 +107,7 @@ public class Game {
                             }
                         }
                     }
+                    gui.getMap().updateView();
                 }
             }
         });
@@ -117,12 +135,32 @@ public class Game {
         if (s < velocity) {
             newXPos = to.getX();
             newYPos = to.getY();
-            updateStations(fieldObject);
+            if (!(fieldObject instanceof Station)){
+                updateStations(fieldObject);
+            }
         } else {
             newXPos = fieldObject.getX() + (dx * velocity) / s;
             newYPos = fieldObject.getY() + (dy * velocity) / s;
         }
         fieldObject.moveTo(newXPos, newYPos);
+    }
+
+    private void moveCircular(Station station, int xMid, int yMid, double velocity) {
+
+        double dx = xMid - station.getX();
+        double dy = yMid - station.getY();
+        double r = sqrt(dx*dx + dy*dy);
+        double newXPos, newYPos;
+        if (dx == 0) {
+            newXPos = station.getX();
+            newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
+        }
+        else {
+            double angle = atan2(dy, dx) + Math.PI/2;
+            newXPos =  (station.getX() + cos(angle) * velocity);
+            newYPos =  (station.getY() + sin(angle) * velocity);
+        }
+        station.moveTo(newXPos, newYPos);
     }
 
     private void updateStations(FieldObject fieldObject) {
@@ -149,17 +187,18 @@ public class Game {
                 String imageFileName = victimInfo[3];
                 double ratio = rnd.nextDouble() * 0.6 + 0.2;
                 if (fromStation != null && toStation != null) {
-                    Location victimLocation = initializePosition(fromStation, toStation, ratio);
-                    Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName,
+                    double[] victimCoords = getPosition(fromStation, toStation, ratio);
+                    Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]), victimName,
                             "src/Sprites/victimIcons/" + imageFileName);
+                    victimNames.add(victimName);
+                    victimStrings.put(victimName, "src/Sprites/victimIcons/" + imageFileName);
                     victim.setPreviousStation(fromStation);
                     victim.setNextStation(toStation);
                     ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
                     Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
                     victim.setNextNextStation(nextNext);
                     victims.add(victim);
-                    System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
-                            victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
+                    victim.updateDistanceQuotient();
                 } else {
                     System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
                             victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
@@ -172,14 +211,14 @@ public class Game {
     }
 
     // Helper method to set location of victim.
-    private Location initializePosition(Station from, Station to, double ratio) {
+    private double[] getPosition(Station from, Station to, double ratio) {
         double dx = to.getX() - from.getX();
         double dy = (to.getY() - from.getY());
         double hyp = sqrt(pow(dx,2) + pow(dy, 2));
         double angle = atan2(dy, dx);
-        double victimXPos = (from.getX() + cos(angle) * hyp * ratio);
-        double victimYPos = (from.getY() + sin(angle) * hyp * ratio);
-        return new Location((int) round(victimYPos), (int) round(victimXPos));
+        double xPos = (from.getX() + cos(angle) * hyp * ratio);
+        double yPos = (from.getY() + sin(angle) * hyp * ratio);
+        return new double[]{xPos, yPos};
     }
 
     private void setStartingStations(StationGraph graph) {
@@ -226,5 +265,25 @@ public class Game {
     private boolean onSameRail(FieldObject a, FieldObject b) {
         return (a.getPreviousStation().equals(b.getPreviousStation()) && a.getNextStation().equals(b.getNextStation()))
                 || (a.getPreviousStation().equals(b.getNextStation())) && a.getNextStation().equals(b.getPreviousStation());
+    }
+
+    private void adjustLocation(FieldObject movingObject) {
+        double[] coords = getPosition(movingObject.getPreviousStation(), movingObject.getNextStation(),
+                movingObject.getDistanceQuotient());
+        movingObject.moveTo(coords[0], coords[1]);
+    }
+
+    private void spawnVictimBetweenStations(Station fromStation, Station toStation) {
+        String victimName = victimNames.get(rng.nextInt(victimNames.size()));
+        double[] victimCoords = getPosition(fromStation, toStation, rng.nextDouble()*0.6 + 0.2);
+        Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]),
+                victimName, victimStrings.get(victimName));
+        victim.setPreviousStation(fromStation);
+        victim.setNextStation(toStation);
+        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
+        Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
+        victim.setNextNextStation(nextNext);
+        victims.add(victim);
+        victim.updateDistanceQuotient();
     }
 }
