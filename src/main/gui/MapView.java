@@ -28,6 +28,7 @@ public class MapView extends JPanel {
     private GUI gui;
     private JLabel scoreCounter;
     private JLabel bigCountDown;
+    private JLabel gameOver;
     private Game game;
     private StationGraph currentGraph;
     private BufferedImage bgImage;
@@ -411,5 +412,9 @@ public class MapView extends JPanel {
         scoreCounter.setText("Score: " + score);
         scoreCounter.setSize(scoreCounter.getPreferredSize());
         System.out.println(score);
+    }
+
+    public void removeGameOver() {
+        remove(gameOver);
     }
 }
