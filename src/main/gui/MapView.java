@@ -27,6 +27,7 @@ public class MapView extends JPanel {
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
     private JLabel scoreCounter;
+    private JLabel bigCountDown;
     private Game game;
     private StationGraph currentGraph;
     private BufferedImage bgImage;
@@ -61,6 +62,12 @@ public class MapView extends JPanel {
             System.out.println("Failed to load all icons.");
         }
         scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        createScoreCounter();
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
+        getActionMap().put("toggle route", new ToggleRouteAction());
+    }
+
+    private void createScoreCounter() {
         scoreCounter = new JLabel();
         scoreCounter.setFont(getFont().deriveFont(16.0f));
         scoreCounter.setText("Score: 0");
@@ -68,8 +75,6 @@ public class MapView extends JPanel {
         scoreCounter.setSize(scoreCounter.getPreferredSize());
         scoreCounter.setForeground(Color.WHITE);
         add(scoreCounter);
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
-        getActionMap().put("toggle route", new ToggleRouteAction());
     }
 
     /**
@@ -381,6 +386,25 @@ public class MapView extends JPanel {
                 // npe is fine, means label was a duplicate and never added.
             }
         }
+    }
+
+    public void displayBigCountDown(int timeLeft) {
+        if (bigCountDown == null) {
+            bigCountDown = new JLabel();
+            bigCountDown.setFont(getFont().deriveFont(100.0f));
+            bigCountDown.setForeground(Color.WHITE);
+            add(bigCountDown);
+            bigCountDown.setText("" + timeLeft);
+            bigCountDown.setSize(bigCountDown.getPreferredSize());
+            bigCountDown.setLocation(size.width / 2 - bigCountDown.getSize().width / 2,
+                    size.height / 2 - bigCountDown.getSize().height / 2);
+        }
+        bigCountDown.setText("" + timeLeft);
+        System.out.println(timeLeft);
+    }
+
+    public void removeBigCountDown() {
+        remove(bigCountDown);
     }
 
     public void updateScore(int score) {

@@ -26,8 +26,9 @@ public class Game {
     private Train mainTrain;
     private GUI gui;
     private Timer timer;
+    private Timer countDownTimer;
     private int score;
-    private boolean running = true;
+    private boolean running = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
     public static final int WIDTH = 800;
@@ -51,6 +52,24 @@ public class Game {
 
     public void run() {
         gui.getMap().buildMap();
+        gui.getMap().updateView();
+
+        // count-down to start
+        countDownTimer = new Timer(1000, new ActionListener() {
+            int countDown = 5;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gui.getMap().displayBigCountDown(countDown--);
+                if (countDown < 0) {
+                    countDownTimer.stop();
+                    gui.getMap().removeBigCountDown();
+                    running = true;
+                }
+            }
+        });
+        countDownTimer.setInitialDelay(0);
+        countDownTimer.start();
+
         timer = new Timer(1000 / fps, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

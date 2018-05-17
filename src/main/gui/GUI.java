@@ -29,6 +29,7 @@ public class GUI extends JFrame {
 
         pack();
         setVisible(true);
+
     }
 
     /**
