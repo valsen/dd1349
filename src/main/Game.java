@@ -147,8 +147,8 @@ public class Game {
 
     private void moveCircular(Station station, int xMid, int yMid, double velocity) {
 
-        double dx = xMid - station.getX();
-        double dy = yMid - station.getY();
+        double dx = station.getX() - xMid;
+        double dy = station.getY() - yMid;
         double r = sqrt(dx*dx + dy*dy);
         double newXPos, newYPos;
         if (dx == 0) {
@@ -156,9 +156,10 @@ public class Game {
             newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
         }
         else {
-            double angle = atan2(dy, dx) + Math.PI/2;
-            newXPos =  (station.getX() + cos(angle) * velocity);
-            newYPos =  (station.getY() + sin(angle) * velocity);
+            double angle = atan2(dy, dx);
+            double newAngle = angle + velocity / r;
+            newXPos = xMid + cos(newAngle) * r;
+            newYPos = yMid + sin(newAngle) * r;
         }
         station.moveTo(newXPos, newYPos);
     }
