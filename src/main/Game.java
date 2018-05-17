@@ -4,15 +4,10 @@ import main.gui.GUI;
 import main.world.*;
 import main.world.graphs.TestGraph;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import javax.swing.Timer;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -31,13 +26,18 @@ public class Game {
     private Timer timer;
     private Timer countDownTimer;
     private int score;
-    private boolean running = false;
+    private boolean playing = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
     public static final int WIDTH = 800;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
     public static final int MAX_VICTIMS = 8;
+    private double difficulty = 0;
+    private boolean spinning = false;
+    private boolean shaking = false;
+    private static final double DIFFICULTY_INCREASE = 0.005;
+    private static final double SPEED_INCREASE  = 0.0001;
 
     public Game() {
         graphs.add(new TestGraph());
@@ -56,6 +56,7 @@ public class Game {
     }
 
     public void run() {
+        difficulty = 0;
         gui.getMap().buildMap();
         gui.getMap().updateView();
 
@@ -68,7 +69,7 @@ public class Game {
                 if (countDown < 0) {
                     countDownTimer.stop();
                     gui.getMap().removeBigCountDown();
-                    running = true;
+                    playing = true;
                 }
             }
         });
@@ -78,15 +79,22 @@ public class Game {
         timer = new Timer(1000 / fps, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (running) {
-                    if (rng.nextDouble() < 0.01 && victims.size() <= MAX_VICTIMS) {
+                if (playing) {
+                    if (rng.nextDouble() < 0.005 && victims.size() <= MAX_VICTIMS) {
                         Station from = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
                         ArrayList<Station> nextOptions = currentGraph.getAvailableStations(from, null);
                         Station to = nextOptions.get(rng.nextInt(nextOptions.size()));
                         spawnVictimBetweenStations(from, to);
                     }
                     for (Station station : currentGraph.getStations()) {
-                        moveCircular(station, gui.getMap().getWidth()/2, gui.getMap().getHeight()/2, station.getVelocity());
+                        if(spinning) {
+                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity());
+                        }
+                        if(shaking) {
+                            if (rng.nextDouble() < 0.2) {
+                                station.shake();
+                            }
+                        }
                     }
                     adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
@@ -108,6 +116,20 @@ public class Game {
                         }
                     }
                     gui.getMap().updateView();
+                    difficulty += DIFFICULTY_INCREASE;
+                    mainTrain.increaseVelocity(SPEED_INCREASE);
+                    if(difficulty > 5) {
+                        spinning = false;
+                        shaking = false;
+                    }
+                    if(difficulty > 15) {
+                        spinning = true;
+                        shaking = false;
+                    }
+                    if(difficulty > 20) {
+                        spinning = true;
+                        shaking = true;
+                    }
                 }
             }
         });
@@ -119,12 +141,12 @@ public class Game {
         return currentGraph;
     }
 
-    public boolean isRunning() {
-        return running;
+    public boolean isPlaying() {
+        return playing;
     }
 
-    public void setRunning(boolean bool) {
-        running = bool;
+    public void setPlaying(boolean bool) {
+        playing = bool;
     }
 
     private void moveTowards(FieldObject fieldObject, Station to, double velocity) {

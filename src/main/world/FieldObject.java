@@ -122,6 +122,10 @@ public abstract class FieldObject {
         return distanceQuotient;
     }
 
+    public void increaseVelocity(double increase) {
+        velocity += increase;
+    }
+
     public int getCollisionRadius() {
         return Math.min(icon.getWidth(null), icon.getHeight(null));
     }

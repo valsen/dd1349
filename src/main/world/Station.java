@@ -2,9 +2,11 @@ package main.world;
 
 import java.awt.*;
 import java.io.File;
+import java.util.Random;
 
 public class Station extends FieldObject {
 
+    private Random rng = new Random();
     private String name;
     private static final double STATION_SPEED = 1;
     private int orientationDegrees;
@@ -33,6 +35,10 @@ public class Station extends FieldObject {
      */
     public int getOrientationDegrees() {
         return orientationDegrees;
+    }
+
+    public void shake() {
+        moveTo(getX() - 2 + rng.nextDouble()*4, getY() - 2 + rng.nextDouble()*4);
     }
 
 }
