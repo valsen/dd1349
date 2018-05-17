@@ -85,6 +85,7 @@ public class Game {
                             it.remove();
                             if(victims.isEmpty()) {
                                 gui.getMap().updateView();
+                                gui.displayGameOver();
                                 timer.stop();
                             }
                         }
