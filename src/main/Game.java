@@ -36,6 +36,7 @@ public class Game {
     private double difficulty = 0;
     private boolean spinning = false;
     private boolean shaking = false;
+    private boolean shrinking = false;
     private static final double DIFFICULTY_INCREASE = 0.005;
     private static final double SPEED_INCREASE  = 0.0001;
 
@@ -95,6 +96,9 @@ public class Game {
                                 station.shake();
                             }
                         }
+                        if(shrinking) {
+                            shrink(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, 0.1);
+                        }
                     }
                     adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
@@ -119,15 +123,12 @@ public class Game {
                     difficulty += DIFFICULTY_INCREASE;
                     mainTrain.increaseVelocity(SPEED_INCREASE);
                     if(difficulty > 5) {
-                        spinning = false;
-                        shaking = false;
+                        spinning = true;
+                    }
+                    if(difficulty > 10) {
+                        shrinking = true;
                     }
                     if(difficulty > 15) {
-                        spinning = true;
-                        shaking = false;
-                    }
-                    if(difficulty > 20) {
-                        spinning = true;
                         shaking = true;
                     }
                 }
@@ -186,6 +187,16 @@ public class Game {
         station.moveTo(newXPos, newYPos);
     }
 
+    private void shrink(Station station, int xMid, int yMid, double velocity) {
+        double dx = xMid - station.getX();
+        double dy = yMid - station.getY();
+        double s = sqrt(dx * dx + dy * dy);
+        double newXPos, newYPos;
+        newXPos = station.getX() + (dx * velocity) / s;
+        newYPos = station.getY() + (dy * velocity) / s;
+        station.moveTo(newXPos, newYPos);
+    }
+
     private void updateStations(FieldObject fieldObject) {
         fieldObject.setPreviousStation(fieldObject.getNextStation());
         fieldObject.setNextStation(fieldObject.getNextNextStation());
@@ -196,7 +207,6 @@ public class Game {
         score++;
         gui.getMap().updateScore(score);
     }
-
     // Create the victims
     private void createVictims(StationGraph currentGraph) {
         Random rnd = new Random();
@@ -276,7 +286,7 @@ public class Game {
             if (dist < radiusA || dist < radiusB) {
                 System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
                 // decrement score by 5;
-                score -= 5;
+                score -= 2;
                 gui.getMap().updateScore(score);
                 return true;
             }
