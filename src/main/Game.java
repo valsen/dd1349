@@ -146,7 +146,6 @@ public class Game {
     }
 
     private void moveCircular(Station station, int xMid, int yMid, double velocity) {
-
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
         double r = sqrt(dx*dx + dy*dy);
@@ -156,8 +155,10 @@ public class Game {
             newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
         }
         else {
+            Random rng = new Random();
             double angle = atan2(dy, dx);
-            double newAngle = angle + velocity / r;
+            double newAngle = angle + (velocity / r);
+            newAngle *= station.getDirection(); // 1 or -1, for clockwise or anti-clockwise direction.
             newXPos = xMid + cos(newAngle) * r;
             newYPos = yMid + sin(newAngle) * r;
         }
