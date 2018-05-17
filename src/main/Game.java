@@ -48,6 +48,7 @@ public class Game {
         mainTrain.setPreviousStation(startingStation);
         mainTrain.setNextStation(startNext);
         mainTrain.setNextNextStation(startNextNext);
+        mainTrain.updateDistanceQuotient();
     }
 
     public void run() {
@@ -56,7 +57,7 @@ public class Game {
 
         // count-down to start
         countDownTimer = new Timer(1000, new ActionListener() {
-            int countDown = 5;
+            int countDown = 0;
             @Override
             public void actionPerformed(ActionEvent e) {
                 gui.getMap().displayBigCountDown(countDown--);
@@ -74,13 +75,18 @@ public class Game {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (running) {
+                    moveTowards(startingStation, startNextNext, startingStation.getVelocity());
                     gui.getMap().updateView();
+                    adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
+                    mainTrain.updateDistanceQuotient();
                     Iterator it = victims.iterator();
                     while (it.hasNext()) {
                         // The victims list obiviously contains only victims
                         Victim victim = (Victim) it.next();
+                        adjustLocation(victim);
                         moveTowards(victim, victim.getNextStation(), victim.getVelocity());
+                        victim.updateDistanceQuotient();
                         if(doesCollide(victim, mainTrain)) {
                             it.remove();
                             if(victims.isEmpty()) {
@@ -149,8 +155,8 @@ public class Game {
                 String imageFileName = victimInfo[3];
                 double ratio = rnd.nextDouble() * 0.6 + 0.2;
                 if (fromStation != null && toStation != null) {
-                    Location victimLocation = initializePosition(fromStation, toStation, ratio);
-                    Victim victim = new Victim(victimLocation.getX(), victimLocation.getY(), victimName,
+                    double[] victimCoords = getPosition(fromStation, toStation, ratio);
+                    Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]), victimName,
                             "src/Sprites/victimIcons/" + imageFileName);
                     victim.setPreviousStation(fromStation);
                     victim.setNextStation(toStation);
@@ -158,6 +164,7 @@ public class Game {
                     Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
                     victim.setNextNextStation(nextNext);
                     victims.add(victim);
+                    victim.updateDistanceQuotient();
                     System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
                             victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
                 } else {
@@ -172,14 +179,14 @@ public class Game {
     }
 
     // Helper method to set location of victim.
-    private Location initializePosition(Station from, Station to, double ratio) {
+    private double[] getPosition(Station from, Station to, double ratio) {
         double dx = to.getX() - from.getX();
         double dy = (to.getY() - from.getY());
         double hyp = sqrt(pow(dx,2) + pow(dy, 2));
         double angle = atan2(dy, dx);
-        double victimXPos = (from.getX() + cos(angle) * hyp * ratio);
-        double victimYPos = (from.getY() + sin(angle) * hyp * ratio);
-        return new Location((int) round(victimYPos), (int) round(victimXPos));
+        double xPos = (from.getX() + cos(angle) * hyp * ratio);
+        double yPos = (from.getY() + sin(angle) * hyp * ratio);
+        return new double[]{xPos, yPos};
     }
 
     private void setStartingStations(StationGraph graph) {
@@ -226,5 +233,11 @@ public class Game {
     private boolean onSameRail(FieldObject a, FieldObject b) {
         return (a.getPreviousStation().equals(b.getPreviousStation()) && a.getNextStation().equals(b.getNextStation()))
                 || (a.getPreviousStation().equals(b.getNextStation())) && a.getNextStation().equals(b.getPreviousStation());
+    }
+
+    private void adjustLocation(FieldObject movingObject) {
+        double[] coords = getPosition(movingObject.getPreviousStation(), movingObject.getNextStation(),
+                movingObject.getDistanceQuotient());
+        movingObject.moveTo(coords[0], coords[1]);
     }
 }

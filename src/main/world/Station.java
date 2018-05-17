@@ -6,8 +6,9 @@ import java.io.File;
 public class Station extends FieldObject {
 
     private String name;
+    private static final double STATION_SPEED = 1;
     private int orientationDegrees;
-    private static final File iconFile = new File("src/Sprites/röd.png");
+                 private static final File iconFile = new File("src/Sprites/röd.png");
 
     /**
      * Construct a station at this location.
@@ -17,6 +18,7 @@ public class Station extends FieldObject {
         super(x, y, iconFile);
         this.name = name;
         this.orientationDegrees = orientationDegrees;
+        setVelocity(STATION_SPEED);
     }
 
     /**
