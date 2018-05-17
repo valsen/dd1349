@@ -20,11 +20,14 @@ import static java.lang.Math.sin;
 
 public class Game {
 
+    private Random rng = new Random(667);
     private ArrayList<StationGraph> graphs = new ArrayList<>();
     private StationGraph currentGraph;
     private Station startingStation, startNext, startNextNext;
     private Train mainTrain;
     private GUI gui;
+    private ArrayList<String> victimNames = new ArrayList<>();
+    private HashMap<String, String> victimStrings = new HashMap<>();
     private Timer timer;
     private Timer countDownTimer;
     private int score;
@@ -34,6 +37,7 @@ public class Game {
     public static final int WIDTH = 800;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
+    public static final int MAX_VICTIMS = 8;
 
     public Game() {
         graphs.add(new TestGraph());
@@ -57,7 +61,7 @@ public class Game {
 
         // count-down to start
         countDownTimer = new Timer(1000, new ActionListener() {
-            int countDown = 0;
+            int countDown = 5;
             @Override
             public void actionPerformed(ActionEvent e) {
                 gui.getMap().displayBigCountDown(countDown--);
@@ -75,6 +79,12 @@ public class Game {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (running) {
+                    if (rng.nextDouble() < 0.01 && victims.size() <= MAX_VICTIMS) {
+                        Station from = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
+                        ArrayList<Station> nextOptions = currentGraph.getAvailableStations(from, null);
+                        Station to = nextOptions.get(rng.nextInt(nextOptions.size()));
+                        spawnVictimBetweenStations(from, to);
+                    }
                     for (Station station : currentGraph.getStations()) {
                         moveCircular(station, gui.getMap().getWidth()/2, gui.getMap().getHeight()/2, station.getVelocity());
                     }
@@ -181,6 +191,8 @@ public class Game {
                     double[] victimCoords = getPosition(fromStation, toStation, ratio);
                     Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]), victimName,
                             "src/Sprites/victimIcons/" + imageFileName);
+                    victimNames.add(victimName);
+                    victimStrings.put(victimName, "src/Sprites/victimIcons/" + imageFileName);
                     victim.setPreviousStation(fromStation);
                     victim.setNextStation(toStation);
                     ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
@@ -188,8 +200,6 @@ public class Game {
                     victim.setNextNextStation(nextNext);
                     victims.add(victim);
                     victim.updateDistanceQuotient();
-                    System.out.println("Spawned " + victimName + " between " + victimInfo[1] + " and " +
-                            victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance.");
                 } else {
                     System.out.println("Failed to spawn " + victimName + " between " + victimInfo[1] + " and " +
                             victimInfo[2] + " at " + (int)(ratio*100) + "% of the distance. \n" +
@@ -264,7 +274,17 @@ public class Game {
         movingObject.moveTo(coords[0], coords[1]);
     }
 
-    private double getDistance(double x1, double x2, double y1, double y2) {
-        return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+    private void spawnVictimBetweenStations(Station fromStation, Station toStation) {
+        String victimName = victimNames.get(rng.nextInt(victimNames.size()));
+        double[] victimCoords = getPosition(fromStation, toStation, rng.nextDouble()*0.6 + 0.2);
+        Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]),
+                victimName, victimStrings.get(victimName));
+        victim.setPreviousStation(fromStation);
+        victim.setNextStation(toStation);
+        ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);
+        Station nextNext = nextNextOptions.get(new Random().nextInt(nextNextOptions.size()));
+        victim.setNextNextStation(nextNext);
+        victims.add(victim);
+        victim.updateDistanceQuotient();
     }
 }
