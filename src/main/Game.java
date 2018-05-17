@@ -75,8 +75,10 @@ public class Game {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (running) {
+                    for (Station station : currentGraph.getStations()) {
+                        moveCircular(station, gui.getMap().getWidth()/2, gui.getMap().getHeight()/2, station.getVelocity());
+                    }
                     moveTowards(startingStation, startNextNext, startingStation.getVelocity());
-                    gui.getMap().updateView();
                     adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
                     mainTrain.updateDistanceQuotient();
@@ -96,6 +98,7 @@ public class Game {
                             }
                         }
                     }
+                    gui.getMap().updateView();
                 }
             }
         });
@@ -123,12 +126,32 @@ public class Game {
         if (s < velocity) {
             newXPos = to.getX();
             newYPos = to.getY();
-            updateStations(fieldObject);
+            if (!(fieldObject instanceof Station)){
+                updateStations(fieldObject);
+            }
         } else {
             newXPos = fieldObject.getX() + (dx * velocity) / s;
             newYPos = fieldObject.getY() + (dy * velocity) / s;
         }
         fieldObject.moveTo(newXPos, newYPos);
+    }
+
+    private void moveCircular(Station station, int xMid, int yMid, double velocity) {
+
+        double dx = xMid - station.getX();
+        double dy = yMid - station.getY();
+        double r = sqrt(dx*dx + dy*dy);
+        double newXPos, newYPos;
+        if (dx == 0) {
+            newXPos = station.getX();
+            newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
+        }
+        else {
+            double angle = atan2(dy, dx) + 90;
+            newXPos =  (station.getX() + cos(angle) * velocity);
+            newYPos =  (station.getY() + sin(angle) * velocity);
+        }
+        station.moveTo(newXPos, newYPos);
     }
 
     private void updateStations(FieldObject fieldObject) {
@@ -240,4 +263,6 @@ public class Game {
                 movingObject.getDistanceQuotient());
         movingObject.moveTo(coords[0], coords[1]);
     }
+
+    //private double
 }

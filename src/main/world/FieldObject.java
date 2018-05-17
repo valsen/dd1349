@@ -112,7 +112,7 @@ public abstract class FieldObject {
         distanceQuotient = distanceCovered / distanceTotal;
     }
 
-    private double getDistance(FieldObject a, FieldObject b) {
+    public static double getDistance(FieldObject a, FieldObject b) {
         double dx = a.getX()-b.getX();
         double dy = b.getY()-b.getY();
         return Math.sqrt(dx*dx + dy*dy);
