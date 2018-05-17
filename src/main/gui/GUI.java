@@ -29,6 +29,8 @@ public class GUI extends JFrame {
 
         pack();
         setVisible(true);
+        JDialog dialog = new JDialog(this, true);
+
     }
 
     /**
