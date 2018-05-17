@@ -57,7 +57,7 @@ public class Game {
 
         // count-down to start
         countDownTimer = new Timer(1000, new ActionListener() {
-            int countDown = 0;
+            int countDown = 5;
             @Override
             public void actionPerformed(ActionEvent e) {
                 gui.getMap().displayBigCountDown(countDown--);
@@ -78,7 +78,6 @@ public class Game {
                     for (Station station : currentGraph.getStations()) {
                         moveCircular(station, gui.getMap().getWidth()/2, gui.getMap().getHeight()/2, station.getVelocity());
                     }
-                    moveTowards(startingStation, startNextNext, startingStation.getVelocity());
                     adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
                     mainTrain.updateDistanceQuotient();
@@ -147,7 +146,7 @@ public class Game {
             newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
         }
         else {
-            double angle = atan2(dy, dx) + 90;
+            double angle = atan2(dy, dx) + Math.PI/2;
             newXPos =  (station.getX() + cos(angle) * velocity);
             newYPos =  (station.getY() + sin(angle) * velocity);
         }
