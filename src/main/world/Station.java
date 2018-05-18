@@ -8,7 +8,7 @@ public class Station extends FieldObject {
 
     private Random rng = new Random();
     private String name;
-    private static final double STATION_SPEED = 1;
+    private static final double STATION_SPEED = 0.6;
     private int orientationDegrees;
     private int direction;
     private static final File iconFile = new File("src/Sprites/röd.png");
