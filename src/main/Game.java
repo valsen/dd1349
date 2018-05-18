@@ -87,7 +87,7 @@ public class Game {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (playing) {
-                    if (rng.nextDouble() < 0.001 && victims.size() <= MAX_VICTIMS) {
+                    if (rng.nextDouble() < 0.002 && victims.size() < MAX_VICTIMS) {
                         Station from = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
                         ArrayList<Station> nextOptions = currentGraph.getAvailableStations(from, null);
                         Station to = nextOptions.get(rng.nextInt(nextOptions.size()));
@@ -146,14 +146,14 @@ public class Game {
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
                     player.increaseVelocity(SPEED_INCREASE);
-                    if(difficulty > 5) {
+                    if(difficulty > 10) {
                         spinning = true;
                     }
-                    if(difficulty > 10) {
+                    if(difficulty > 20) {
                         spinning = false;
                         spinningRandom = true;
                     }
-                    if(difficulty > 15) {
+                    if(difficulty > 30) {
                         shaking = true;
                         shrinking = true;
                     }
