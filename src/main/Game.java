@@ -106,7 +106,8 @@ public class Game {
                             }
                         }
                         if(shrinking) {
-                            shrink(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, 0.1);
+
+                            shrink(station, station.getInitialXPos(), station.getInitialYPos(), 0.1);
                         }
                     }
                     adjustLocation(player);
@@ -146,16 +147,21 @@ public class Game {
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
                     player.increaseVelocity(SPEED_INCREASE);
-                    if(difficulty > 10) {
+                    if(difficulty > 5) {
                         spinning = true;
                     }
-                    if(difficulty > 20) {
+                    if(difficulty > 10) {
                         spinning = false;
                         spinningRandom = true;
                     }
-                    if(difficulty > 30) {
-                        shaking = true;
+                    if(difficulty > 15) {
+                        spinningRandom = false;
+                        //shaking = true;
                         shrinking = true;
+                    }
+                    if (difficulty > 20) {
+                        spinning = true;
+                        shrinking = false;
                     }
                 }
             }
@@ -228,14 +234,29 @@ public class Game {
         station.moveTo(newXPos, newYPos);
     }
 
-    private void shrink(Station station, int xMid, int yMid, double velocity) {
-        double dx = xMid - station.getX();
-        double dy = yMid - station.getY();
-        double s = sqrt(dx * dx + dy * dy);
-        double newXPos, newYPos;
-        newXPos = station.getX() + (dx * velocity) / s;
-        newYPos = station.getY() + (dy * velocity) / s;
-        station.moveTo(newXPos, newYPos);
+    private void shrink(Station station, double initialXPos, double initialYPos, double velocity) {
+        double xPos = station.getX();
+        double yPos = station.getY();
+        int xMid = gui.getMap().getWidth() / 2;
+        int yMid = gui.getMap().getHeight() / 2;
+        double initialDx = initialXPos - xMid;
+        double initialDy = initialYPos - yMid;
+        double dx = xPos - xMid;
+        double dy = yPos - yMid;
+        double r = sqrt(dx*dx + dy*dy);
+        double angle = atan2(dy, dx);
+
+        if (abs(dx) > abs(initialDx*0.6)) {
+            xPos = xMid + cos(angle) * r - (cos(angle) * r * 0.002);
+        }
+        if (abs(dy) > abs(initialDy*0.6)) {
+            yPos = yMid + sin(angle) * r - (sin(angle) * r * 0.002);
+            //newXPos = station.getX() + cos(newAngle);
+            //newYPos = station.getY() + sin(newAngle);
+            //newXPos = station.getX() + (dx * velocity) / s;
+            //newYPos = station.getY() + (dy * velocity) / s;
+        }
+        station.moveTo(xPos, yPos);
     }
 
     private void updateStations(FieldObject fieldObject) {
