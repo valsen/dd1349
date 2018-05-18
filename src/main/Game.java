@@ -32,9 +32,10 @@ public class Game {
     public static final int WIDTH = 800;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
-    public static final int MAX_VICTIMS = 8;
+    private static final int MAX_VICTIMS = 8;
     private double difficulty = 0;
     private boolean spinning = false;
+    private boolean spinningRandom = false;
     private boolean shaking = false;
     private boolean shrinking = false;
     private static final double DIFFICULTY_INCREASE = 0.005;
@@ -66,9 +67,13 @@ public class Game {
             int countDown = 5;
             @Override
             public void actionPerformed(ActionEvent e) {
+                gui.getMap().displayObjective();
+                gui.getMap().displayCommandInstruction();
                 gui.getMap().displayBigCountDown(countDown--);
                 if (countDown < 0) {
                     countDownTimer.stop();
+                    gui.getMap().removeObjective();
+                    gui.getMap().removeCommandInstruction();
                     gui.getMap().removeBigCountDown();
                     playing = true;
                 }
@@ -89,6 +94,9 @@ public class Game {
                     }
                     for (Station station : currentGraph.getStations()) {
                         if(spinning) {
+                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), false);
+                        }
+                        if(spinningRandom) {
                             moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), true);
                         }
                         if(shaking) {
@@ -123,13 +131,14 @@ public class Game {
                     difficulty += DIFFICULTY_INCREASE;
                     mainTrain.increaseVelocity(SPEED_INCREASE);
                     if(difficulty > 5) {
-                        spinning = true;
+                        //spinning = true;
+                        spinningRandom = true;
                     }
                     if(difficulty > 10) {
-                        shrinking = true;
+                        shaking = true;
                     }
                     if(difficulty > 15) {
-                        shaking = true;
+                        shrinking = true;
                     }
                 }
             }

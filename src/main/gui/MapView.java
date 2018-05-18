@@ -24,9 +24,13 @@ public class MapView extends JPanel {
     private static final int TRAIN_SIZE = 50;
     private static final int STATION_SIZE = 15;
     private static final int VICTIM_SIZE = 60;
+    private static final String OBJECTIVE_TEXT = "Avoid running over the pedestrians!";
+    private static final String GAME_COMMAND = "Use spacebar to control the train's route";
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
     private JLabel scoreCounter;
+    private JLabel objective;
+    private JLabel commandLabel;
     private JLabel bigCountDown;
     private JLabel gameOver;
     private Game game;
@@ -95,7 +99,7 @@ public class MapView extends JPanel {
         if(!isVisible()) {
             setVisible(true);
         }
-        createLabels();
+        //createLabels();
         preparePaint();
     }
 
@@ -111,7 +115,7 @@ public class MapView extends JPanel {
         drawLinesBetweenAllStations();
         highlightActiveRoute();
         drawStations();
-        drawStationLabels();
+        //drawStationLabels();
         drawVictims();
         drawTrain();
         repaint();
@@ -153,7 +157,7 @@ public class MapView extends JPanel {
             drawNewBackground();
             highlightActiveRoute();
             drawStations();
-            drawStationLabels();
+            //drawStationLabels();
     }
 
     /**
@@ -389,6 +393,42 @@ public class MapView extends JPanel {
                 // npe is fine, means label was a duplicate and never added.
             }
         }
+    }
+
+    public void displayObjective() {
+        if (objective == null) {
+            objective = new JLabel();
+            objective.setFont(getFont().deriveFont(20.0f));
+            objective.setForeground(Color.WHITE);
+            add(objective);
+            objective.setText(OBJECTIVE_TEXT);
+            objective.setSize(objective.getPreferredSize());
+            objective.setLocation(size.width / 2 - objective.getSize().width / 2,
+                    20);
+            System.out.println(objective.getText());
+        }
+    }
+
+    public void displayCommandInstruction() {
+        if (commandLabel == null) {
+            commandLabel = new JLabel();
+            commandLabel.setFont(getFont().deriveFont(20.0f));
+            commandLabel.setForeground(Color.WHITE);
+            add(commandLabel);
+            commandLabel.setText(GAME_COMMAND);
+            commandLabel.setSize(commandLabel.getPreferredSize());
+            commandLabel.setLocation(size.width / 2 - commandLabel.getSize().width / 2,
+                    50);
+            System.out.println(commandLabel.getText());
+        }
+    }
+
+    public void removeCommandInstruction() {
+        remove(commandLabel);
+    }
+
+    public void removeObjective() {
+        remove(objective);
     }
 
     public void displayBigCountDown(int timeLeft) {
