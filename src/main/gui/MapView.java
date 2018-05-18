@@ -76,9 +76,9 @@ public class MapView extends JPanel {
 
     private void createScoreCounter() {
         scoreCounter = new JLabel();
-        scoreCounter.setFont(getFont().deriveFont(16.0f));
+        scoreCounter.setFont(getFont().deriveFont(26.0f));
         scoreCounter.setText("Score: 0");
-        scoreCounter.setLocation(10, 10);
+        scoreCounter.setLocation(20, 15);
         scoreCounter.setSize(scoreCounter.getPreferredSize());
         scoreCounter.setForeground(Color.WHITE);
         add(scoreCounter);
@@ -86,9 +86,9 @@ public class MapView extends JPanel {
 
     private void createHealthCounter() {
         healthCounter = new JLabel();
-        healthCounter.setFont(getFont().deriveFont(16.0f));
+        healthCounter.setFont(getFont().deriveFont(26.0f));
         healthCounter.setText("Health: 100");
-        healthCounter.setLocation(10, 30);
+        healthCounter.setLocation(20, 45);
         healthCounter.setSize(healthCounter.getPreferredSize());
         healthCounter.setForeground(Color.GREEN);
         add(healthCounter);
@@ -422,7 +422,7 @@ public class MapView extends JPanel {
             objective.setText(OBJECTIVE_TEXT);
             objective.setSize(objective.getPreferredSize());
             objective.setLocation(size.width / 2 - objective.getSize().width / 2,
-                    60);
+                    100);
             System.out.println(objective.getText());
         }
     }
@@ -436,7 +436,7 @@ public class MapView extends JPanel {
             commandLabel.setText(GAME_COMMAND);
             commandLabel.setSize(commandLabel.getPreferredSize());
             commandLabel.setLocation(size.width / 2 - commandLabel.getSize().width / 2,
-                    90);
+                    130);
             System.out.println(commandLabel.getText());
         }
     }
