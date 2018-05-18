@@ -89,7 +89,7 @@ public class Game {
                     }
                     for (Station station : currentGraph.getStations()) {
                         if(spinning) {
-                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity());
+                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), true);
                         }
                         if(shaking) {
                             if (rng.nextDouble() < 0.2) {
@@ -168,19 +168,23 @@ public class Game {
         fieldObject.moveTo(newXPos, newYPos);
     }
 
-    private void moveCircular(Station station, int xMid, int yMid, double velocity) {
-
+    private void moveCircular(Station station, int xMid, int yMid, double velocity, boolean randomDirection) {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
         double r = sqrt(dx*dx + dy*dy);
-        double newXPos, newYPos;
+        double newXPos, newYPos, newAngle;
         if (dx == 0) {
             newXPos = station.getX();
             newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
         }
         else {
             double angle = atan2(dy, dx);
-            double newAngle = angle + velocity / r;
+            if (randomDirection) {
+                newAngle = angle + (velocity / r) * station.getDirection();
+            }
+            else {
+                newAngle = angle + (velocity / r);
+            }
             newXPos = xMid + cos(newAngle) * r;
             newYPos = yMid + sin(newAngle) * r;
         }

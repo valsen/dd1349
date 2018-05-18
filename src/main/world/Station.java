@@ -10,7 +10,8 @@ public class Station extends FieldObject {
     private String name;
     private static final double STATION_SPEED = 1;
     private int orientationDegrees;
-                 private static final File iconFile = new File("src/Sprites/röd.png");
+    private int direction;
+    private static final File iconFile = new File("src/Sprites/röd.png");
 
     /**
      * Construct a station at this location.
@@ -20,6 +21,7 @@ public class Station extends FieldObject {
         super(x, y, iconFile);
         this.name = name;
         this.orientationDegrees = orientationDegrees;
+        direction = new Random().nextBoolean() ? 1 : -1;
         setVelocity(STATION_SPEED);
     }
 
@@ -41,4 +43,7 @@ public class Station extends FieldObject {
         moveTo(getX() - 2 + rng.nextDouble()*4, getY() - 2 + rng.nextDouble()*4);
     }
 
+    public int getDirection() {
+        return direction;
+    }
 }
