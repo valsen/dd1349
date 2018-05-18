@@ -23,7 +23,7 @@ public class MapView extends JPanel {
     private static final Color ACTIVE_RAIL_COLOR = new Color(255, 101, 162);
     private static final int TRAIN_SIZE = 50;
     private static final int STATION_SIZE = 15;
-    private static final int VICTIM_SIZE = 60;
+    private static final int VICTIM_SIZE = 50;
     private static final String OBJECTIVE_TEXT = "Hit enemies from behind to collect points. Avoid frontal collisions!";
     private static final String GAME_COMMAND = "Use spacebar to control your spaceship's route";
     private final double GRID_VIEW_SCALING_FACTOR = 1;

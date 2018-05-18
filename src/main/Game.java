@@ -129,9 +129,6 @@ public class Game {
                             score += 10;
                             gui.getMap().updateScore(score);
                             gui.getMap().updateView();
-                            if(victims.isEmpty()) {
-                                timer.stop();
-                            }
                         }
                         else if (frontalCollision(player, victim)) {
                             // decrement score by 5;

@@ -19,10 +19,10 @@ public class GUI extends JFrame {
     public GUI(Game game, int width, int height)
     {
         setTitle("Dysfunctional train game");
-        setLocation(0, 0);
+        //setLocation(50, 50);
         setBackground(BG_COLOR);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(800, 400));
+        setMinimumSize(new Dimension(800, 600));
 
         map = new MapView(this, game, height, width);
 
@@ -30,6 +30,7 @@ public class GUI extends JFrame {
         contents.add(map, BorderLayout.CENTER);
 
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
 
     }
