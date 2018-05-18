@@ -1,3 +1,3 @@
-Charlie Chaplin/StationA/StationB/chaplin.png
-A blind man/StationB/StationC/blindman.png
-Einstein/StationC/StationE/einstein.png
+Charlie Chaplin/StationA/StationB/spaceship.png
+A blind man/StationB/StationC/spaceship.png
+Einstein/StationC/StationE/spaceship.png

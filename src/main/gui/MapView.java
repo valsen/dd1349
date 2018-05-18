@@ -24,11 +24,12 @@ public class MapView extends JPanel {
     private static final int TRAIN_SIZE = 50;
     private static final int STATION_SIZE = 15;
     private static final int VICTIM_SIZE = 60;
-    private static final String OBJECTIVE_TEXT = "Avoid running over the pedestrians!";
-    private static final String GAME_COMMAND = "Use spacebar to control the train's route";
+    private static final String OBJECTIVE_TEXT = "Hit enemies from behind to collect points. Avoid frontal collisions!";
+    private static final String GAME_COMMAND = "Use spacebar to control your spaceship's route";
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
     private JLabel scoreCounter;
+    private JLabel healthCounter;
     private JLabel objective;
     private JLabel commandLabel;
     private JLabel bigCountDown;
@@ -61,13 +62,14 @@ public class MapView extends JPanel {
         gridWidth = width;
         size = new Dimension(width, height);
         try {
-            trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
+            trainIcon = ImageIO.read(new File("src/Sprites/mainship.png"));
         }
         catch (IOException e) {
             System.out.println("Failed to load all icons.");
         }
         scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
         createScoreCounter();
+        createHealthCounter();
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
         getActionMap().put("toggle route", new ToggleRouteAction());
     }
@@ -80,6 +82,16 @@ public class MapView extends JPanel {
         scoreCounter.setSize(scoreCounter.getPreferredSize());
         scoreCounter.setForeground(Color.WHITE);
         add(scoreCounter);
+    }
+
+    private void createHealthCounter() {
+        healthCounter = new JLabel();
+        healthCounter.setFont(getFont().deriveFont(16.0f));
+        healthCounter.setText("Health: 100");
+        healthCounter.setLocation(10, 30);
+        healthCounter.setSize(healthCounter.getPreferredSize());
+        healthCounter.setForeground(Color.GREEN);
+        add(healthCounter);
     }
 
     /**
@@ -220,7 +232,7 @@ public class MapView extends JPanel {
      * to the next-next station.
      */
     private void highlightActiveRoute() {
-        Train train = game.getMainTrain();
+        Train train = game.getPlayer();
         Station next = train.getNextStation();
         Station nextNext = train.getNextNextStation();
         int trainXPos = (int) (train.getX() * xScale + (xScale / 2));
@@ -314,7 +326,7 @@ public class MapView extends JPanel {
      * Draw the trains.
      */
     private void drawTrain() {
-        drawCenteredTrain(game.getMainTrain().getRoundedX(), game.getMainTrain().getRoundedY());
+        drawCenteredTrain(game.getPlayer().getRoundedX(), game.getPlayer().getRoundedY());
     }
 
     /**
@@ -325,8 +337,10 @@ public class MapView extends JPanel {
     private void drawCenteredTrain(int x, int y) {
         x = (int) (x * xScale - (TRAIN_SIZE) / 2 + xScale / 2);
         y = (int) (y * yScale - (TRAIN_SIZE / 2) + yScale / 2);
-
-        g.drawImage(scaledTrainIcon, x, y, null);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.rotate(game.getAngle(game.getPlayer()), x + TRAIN_SIZE/2, y + TRAIN_SIZE/2);
+        g2d.drawImage(scaledTrainIcon, x, y, null);
+        g2d.rotate(-(game.getAngle(game.getPlayer())), x + TRAIN_SIZE/2, y + TRAIN_SIZE/2);
     }
 
     /**
@@ -345,10 +359,14 @@ public class MapView extends JPanel {
      * @param y the row of the victim.
      */
     private void drawCenteredVictim(Victim victim, int x, int y) {
-        Image victimIcon = victim.getIcon();
+        Image victimIcon = victim.getIcon();//.getScaledInstance((int)round(victim.getIcon().getWidth(null)/1.5),
+                                                              //(int)round(victim.getIcon().getHeight(null)/1.5), 0);
         x = (int) (x * xScale - victimIcon.getWidth(null) / 2 + xScale/2);
         y = (int) (y * yScale - victimIcon.getHeight(null) / 2 + yScale/2);
-        g.drawImage(victimIcon, x, y, null);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.rotate(game.getAngle(victim), x + VICTIM_SIZE/2, y + VICTIM_SIZE/2);
+        g2d.drawImage(victimIcon, x, y, null);
+        g2d.rotate(-(game.getAngle(victim)), x + VICTIM_SIZE/2, y + VICTIM_SIZE/2);
     }
 
     /**
@@ -404,7 +422,7 @@ public class MapView extends JPanel {
             objective.setText(OBJECTIVE_TEXT);
             objective.setSize(objective.getPreferredSize());
             objective.setLocation(size.width / 2 - objective.getSize().width / 2,
-                    20);
+                    60);
             System.out.println(objective.getText());
         }
     }
@@ -418,7 +436,7 @@ public class MapView extends JPanel {
             commandLabel.setText(GAME_COMMAND);
             commandLabel.setSize(commandLabel.getPreferredSize());
             commandLabel.setLocation(size.width / 2 - commandLabel.getSize().width / 2,
-                    50);
+                    90);
             System.out.println(commandLabel.getText());
         }
     }
@@ -450,10 +468,19 @@ public class MapView extends JPanel {
         remove(bigCountDown);
     }
 
-    public void updateScore(int score) {
-        scoreCounter.setText("Score: " + score);
+    public void updateScore(double score) {
+        scoreCounter.setText("Score: " + (int)round(score));
         scoreCounter.setSize(scoreCounter.getPreferredSize());
         System.out.println(score);
+    }
+
+    public void updateHealth(double health) {
+        if (health < 80) healthCounter.setForeground(Color.YELLOW);
+        if (health < 50) healthCounter.setForeground(Color.ORANGE);
+        if (health < 20) healthCounter.setForeground(Color.RED);
+        healthCounter.setText("Health: " + (int)round(health));
+        healthCounter.setSize(healthCounter.getPreferredSize());
+        System.out.println(health);
     }
 
     public void removeGameOver() {

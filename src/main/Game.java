@@ -19,20 +19,21 @@ public class Game {
     private ArrayList<StationGraph> graphs = new ArrayList<>();
     private StationGraph currentGraph;
     private Station startingStation, startNext, startNextNext;
-    private Train mainTrain;
+    private Train player;
     private GUI gui;
     private ArrayList<String> victimNames = new ArrayList<>();
     private HashMap<String, String> victimStrings = new HashMap<>();
     private Timer timer;
     private Timer countDownTimer;
-    private int score;
+    private double score;
+    private double health = 100;
     private boolean playing = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
     public static final int WIDTH = 800;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
-    private static final int MAX_VICTIMS = 8;
+    private static final int MAX_VICTIMS = 5;
     private double difficulty = 0;
     private boolean spinning = false;
     private boolean spinningRandom = false;
@@ -50,11 +51,11 @@ public class Game {
         createMainTrain();
     }
     private void createMainTrain() {
-        mainTrain = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
-        mainTrain.setPreviousStation(startingStation);
-        mainTrain.setNextStation(startNext);
-        mainTrain.setNextNextStation(startNextNext);
-        mainTrain.updateDistanceQuotient();
+        player = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
+        player.setPreviousStation(startingStation);
+        player.setNextStation(startNext);
+        player.setNextNextStation(startNextNext);
+        player.updateDistanceQuotient();
     }
 
     public void run() {
@@ -86,7 +87,7 @@ public class Game {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (playing) {
-                    if (rng.nextDouble() < 0.005 && victims.size() <= MAX_VICTIMS) {
+                    if (rng.nextDouble() < 0.001 && victims.size() <= MAX_VICTIMS) {
                         Station from = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
                         ArrayList<Station> nextOptions = currentGraph.getAvailableStations(from, null);
                         Station to = nextOptions.get(rng.nextInt(nextOptions.size()));
@@ -94,10 +95,10 @@ public class Game {
                     }
                     for (Station station : currentGraph.getStations()) {
                         if(spinning) {
-                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), false);
+                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), false);
                         }
                         if(spinningRandom) {
-                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), true);
+                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), true);
                         }
                         if(shaking) {
                             if (rng.nextDouble() < 0.2) {
@@ -108,9 +109,9 @@ public class Game {
                             shrink(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, 0.1);
                         }
                     }
-                    adjustLocation(mainTrain);
-                    moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
-                    mainTrain.updateDistanceQuotient();
+                    adjustLocation(player);
+                    moveTowards(player, player.getNextStation(), player.getVelocity());
+                    player.updateDistanceQuotient();
                     Iterator it = victims.iterator();
                     while (it.hasNext()) {
                         // The victims list obiviously contains only victims
@@ -118,10 +119,25 @@ public class Game {
                         adjustLocation(victim);
                         moveTowards(victim, victim.getNextStation(), victim.getVelocity());
                         victim.updateDistanceQuotient();
-                        if(doesCollide(victim, mainTrain)) {
+                        if (collisionFromBehind(player, victim)) {
                             it.remove();
+                            // increment score by 5;
+                            score += 10;
+                            gui.getMap().updateScore(score);
+                            gui.getMap().updateView();
                             if(victims.isEmpty()) {
-                                gui.getMap().updateView();
+                                timer.stop();
+                            }
+                        }
+                        else if (frontalCollision(player, victim)) {
+                            // decrement score by 5;
+                            score -= 0.1;
+                            health -= 0.3;
+                            System.out.println("Health: " + (int)round(health));
+                            gui.getMap().updateScore(score);
+                            gui.getMap().updateHealth(health);
+                            gui.getMap().updateView();
+                            if (round(health) <= 0) {
                                 gui.displayGameOver();
                                 timer.stop();
                             }
@@ -129,15 +145,16 @@ public class Game {
                     }
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
-                    mainTrain.increaseVelocity(SPEED_INCREASE);
+                    player.increaseVelocity(SPEED_INCREASE);
                     if(difficulty > 5) {
-                        //spinning = true;
-                        spinningRandom = true;
+                        spinning = true;
                     }
                     if(difficulty > 10) {
-                        shaking = true;
+                        spinning = false;
+                        spinningRandom = true;
                     }
                     if(difficulty > 15) {
+                        shaking = true;
                         shrinking = true;
                     }
                 }
@@ -182,21 +199,32 @@ public class Game {
         double dy = station.getY() - yMid;
         double r = sqrt(dx*dx + dy*dy);
         double newXPos, newYPos, newAngle;
-        if (dx == 0) {
-            newXPos = station.getX();
-            newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
+        double angle = atan2(dy, dx);
+        if (randomDirection) {
+            newAngle = angle + (velocity / r) * station.getDirection();
         }
         else {
-            double angle = atan2(dy, dx);
-            if (randomDirection) {
-                newAngle = angle + (velocity / r) * station.getDirection();
-            }
-            else {
-                newAngle = angle + (velocity / r);
-            }
-            newXPos = xMid + cos(newAngle) * r;
-            newYPos = yMid + sin(newAngle) * r;
+            newAngle = angle + (velocity / r);
         }
+        newXPos = xMid + cos(newAngle) * r;
+        newYPos = yMid + sin(newAngle) * r;
+        station.moveTo(newXPos, newYPos);
+    }
+
+    private void movePerfectlyCircular(Station station, int xMid, int yMid, double velocity, boolean randomDirection) {
+        double dx = station.getX() - xMid;
+        double dy = station.getY() - yMid;
+        double r = sqrt(dx*dx + dy*dy);
+        double newXPos, newYPos, newAngle;
+        double angle = atan2(dy, dx);
+        if (randomDirection) {
+            newAngle = angle + 0.003 * station.getDirection();
+        }
+        else {
+            newAngle = angle + 0.003;
+        }
+        newXPos = xMid + cos(newAngle) * r;
+        newYPos = yMid + sin(newAngle) * r;
         station.moveTo(newXPos, newYPos);
     }
 
@@ -215,10 +243,6 @@ public class Game {
         fieldObject.setNextStation(fieldObject.getNextNextStation());
         ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(fieldObject.getNextStation(), fieldObject.getPreviousStation());
         fieldObject.setNextNextStation(nextNextOptions.get(new Random().nextInt(nextNextOptions.size())));
-
-        // increment score counter
-        score++;
-        gui.getMap().updateScore(score);
     }
     // Create the victims
     private void createVictims(StationGraph currentGraph) {
@@ -267,6 +291,12 @@ public class Game {
         return new double[]{xPos, yPos};
     }
 
+    public double getAngle(FieldObject object) {
+        double dx = object.getNextStation().getX() - object.getPreviousStation().getX();
+        double dy = object.getNextStation().getY() - object.getPreviousStation().getY();
+        return atan2(dy, dx);
+    }
+
     private void setStartingStations(StationGraph graph) {
         Random rng = new Random();
         startingStation = graph.getStations().get(rng.nextInt(graph.getStations().size()));
@@ -277,30 +307,42 @@ public class Game {
     }
 
     public void toggleMainRoute() {
-        ArrayList<Station> available = currentGraph.getAvailableStations(mainTrain.getNextStation(), mainTrain.getPreviousStation());
-        mainTrain.toggleRoute(available);
+        ArrayList<Station> available = currentGraph.getAvailableStations(player.getNextStation(), player.getPreviousStation());
+        player.toggleRoute(available);
     }
 
     public ArrayList<Victim> getVictims() {
         return victims;
     }
 
-    public Train getMainTrain() {
-        return mainTrain;
+    public Train getPlayer() {
+        return player;
     }
 
-    private boolean doesCollide(FieldObject a, FieldObject b) {
-        int radiusA = a.getCollisionRadius();
-        int radiusB = b.getCollisionRadius();
-        int dx = a.getRoundedX() - b.getRoundedX();
-        int dy = a.getRoundedY() - b.getRoundedY();
+    private boolean collisionFromBehind(FieldObject player, FieldObject enemy) {
+        int radiusA = player.getCollisionRadius();
+        int radiusB = enemy.getCollisionRadius();
+        int dx = player.getRoundedX() - enemy.getRoundedX();
+        int dy = player.getRoundedY() - enemy.getRoundedY();
         double dist = Math.sqrt(dx*dx + dy*dy);
-        if (onSameRail(a, b)) {
+        if (onSameRail(player, enemy) && player.getNextStation().equals(enemy.getNextStation())) {
             if (dist < radiusA || dist < radiusB) {
                 System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
-                // decrement score by 5;
-                score -= 2;
-                gui.getMap().updateScore(score);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean frontalCollision(FieldObject player, FieldObject enemy) {
+        int radiusA = player.getCollisionRadius();
+        int radiusB = enemy.getCollisionRadius();
+        int dx = player.getRoundedX() - enemy.getRoundedX();
+        int dy = player.getRoundedY() - enemy.getRoundedY();
+        double dist = Math.sqrt(dx*dx + dy*dy);
+        if (onSameRail(player, enemy) && player.getNextStation().equals(enemy.getPreviousStation())) {
+            if (dist < radiusA || dist < radiusB) {
+                System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
                 return true;
             }
         }

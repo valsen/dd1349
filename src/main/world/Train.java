@@ -15,7 +15,7 @@ public class Train extends FieldObject {
     private Random rng;
     private String name;
     private Image trainIcon;
-    private static final File icon = new File("src/Sprites/grön.png");
+    private static final File icon = new File("src/Sprites/spaceship.png");
 
 
     /**
