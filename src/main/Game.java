@@ -30,7 +30,7 @@ public class Game {
     private boolean playing = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
-    public static final int WIDTH = 800;
+    public static final int WIDTH = 1024;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
     private static final int MAX_VICTIMS = 5;
@@ -39,8 +39,9 @@ public class Game {
     private boolean spinningRandom = false;
     private boolean shaking = false;
     private boolean shrinking = false;
+    private boolean expanding = false;
     private static final double DIFFICULTY_INCREASE = 0.005;
-    private static final double SPEED_INCREASE  = 0.0001;
+    private static final double SPEED_INCREASE  = 0.0002;
 
     public Game() {
         graphs.add(new TestGraph());
@@ -106,8 +107,10 @@ public class Game {
                             }
                         }
                         if(shrinking) {
-
                             shrink(station, station.getInitialXPos(), station.getInitialYPos(), 0.1);
+                        }
+                        if (expanding) {
+                            expand(station, station.getInitialXPos(), station.getInitialYPos(), 0.1);
                         }
                     }
                     adjustLocation(player);
@@ -156,12 +159,19 @@ public class Game {
                     }
                     if(difficulty > 15) {
                         spinningRandom = false;
-                        //shaking = true;
                         shrinking = true;
                     }
                     if (difficulty > 20) {
-                        spinning = true;
                         shrinking = false;
+                        spinning = true;
+                    }
+                    if (difficulty > 25) {
+                        spinning = false;
+                        expanding = true;
+                    }
+                    if (difficulty > 30) {
+                        expanding = false;
+                        spinningRandom = true;
                     }
                 }
             }
@@ -239,24 +249,32 @@ public class Game {
         double yPos = station.getY();
         int xMid = gui.getMap().getWidth() / 2;
         int yMid = gui.getMap().getHeight() / 2;
-        double initialDx = initialXPos - xMid;
-        double initialDy = initialYPos - yMid;
-        double dx = xPos - xMid;
-        double dy = yPos - yMid;
+        double dx = (initialXPos - xMid) * 0.6 - (xPos - xMid);
+        double dy = (initialYPos - yMid) * 0.6 - (yPos - yMid);
         double r = sqrt(dx*dx + dy*dy);
         double angle = atan2(dy, dx);
 
-        if (abs(dx) > abs(initialDx*0.6)) {
-            xPos = xMid + cos(angle) * r - (cos(angle) * r * 0.002);
+        if (abs(dx) > 0 || abs(dy) > 0) {
+            xPos = xPos + cos(angle) * r * 0.004;
+            yPos = yPos + sin(angle) * r * 0.004;
+            station.moveTo(xPos, yPos);
         }
-        if (abs(dy) > abs(initialDy*0.6)) {
-            yPos = yMid + sin(angle) * r - (sin(angle) * r * 0.002);
-            //newXPos = station.getX() + cos(newAngle);
-            //newYPos = station.getY() + sin(newAngle);
-            //newXPos = station.getX() + (dx * velocity) / s;
-            //newYPos = station.getY() + (dy * velocity) / s;
+    }
+
+    private void expand(Station station, double initialXPos, double initialYPos, double velocity) {
+        double xPos = station.getX();
+        double yPos = station.getY();
+        double dx = initialXPos - xPos;
+        double dy = initialYPos - yPos;
+        double r = sqrt(dx*dx + dy*dy);
+        double angle = atan2(dy, dx);
+
+        if (abs(dx) > 0 || abs(dy) > 0) {
+            xPos = xPos + cos(angle) * r  * 0.004;
+            yPos = yPos + sin(angle) * r * 0.004;
+            station.moveTo(xPos, yPos);
         }
-        station.moveTo(xPos, yPos);
+
     }
 
     private void updateStations(FieldObject fieldObject) {
