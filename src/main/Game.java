@@ -4,15 +4,10 @@ import main.gui.GUI;
 import main.world.*;
 import main.world.graphs.TestGraph;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import javax.swing.Timer;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -31,13 +26,20 @@ public class Game {
     private Timer timer;
     private Timer countDownTimer;
     private int score;
-    private boolean running = false;
+    private boolean playing = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
     public static final int WIDTH = 800;
     private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
-    public static final int MAX_VICTIMS = 8;
+    private static final int MAX_VICTIMS = 8;
+    private double difficulty = 0;
+    private boolean spinning = false;
+    private boolean spinningRandom = false;
+    private boolean shaking = false;
+    private boolean shrinking = false;
+    private static final double DIFFICULTY_INCREASE = 0.005;
+    private static final double SPEED_INCREASE  = 0.0001;
 
     public Game() {
         graphs.add(new TestGraph());
@@ -56,6 +58,7 @@ public class Game {
     }
 
     public void run() {
+        difficulty = 0;
         gui.getMap().buildMap();
         gui.getMap().updateView();
 
@@ -64,11 +67,15 @@ public class Game {
             int countDown = 5;
             @Override
             public void actionPerformed(ActionEvent e) {
+                gui.getMap().displayObjective();
+                gui.getMap().displayCommandInstruction();
                 gui.getMap().displayBigCountDown(countDown--);
                 if (countDown < 0) {
                     countDownTimer.stop();
+                    gui.getMap().removeObjective();
+                    gui.getMap().removeCommandInstruction();
                     gui.getMap().removeBigCountDown();
-                    running = true;
+                    playing = true;
                 }
             }
         });
@@ -78,15 +85,28 @@ public class Game {
         timer = new Timer(1000 / fps, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (running) {
-                    if (rng.nextDouble() < 0.01 && victims.size() <= MAX_VICTIMS) {
+                if (playing) {
+                    if (rng.nextDouble() < 0.005 && victims.size() <= MAX_VICTIMS) {
                         Station from = currentGraph.getStations().get(rng.nextInt(currentGraph.getStations().size()));
                         ArrayList<Station> nextOptions = currentGraph.getAvailableStations(from, null);
                         Station to = nextOptions.get(rng.nextInt(nextOptions.size()));
                         spawnVictimBetweenStations(from, to);
                     }
                     for (Station station : currentGraph.getStations()) {
-                        moveCircular(station, gui.getMap().getWidth()/2, gui.getMap().getHeight()/2, station.getVelocity());
+                        if(spinning) {
+                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), false);
+                        }
+                        if(spinningRandom) {
+                            moveCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), true);
+                        }
+                        if(shaking) {
+                            if (rng.nextDouble() < 0.2) {
+                                station.shake();
+                            }
+                        }
+                        if(shrinking) {
+                            shrink(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, 0.1);
+                        }
                     }
                     adjustLocation(mainTrain);
                     moveTowards(mainTrain, mainTrain.getNextStation(), mainTrain.getVelocity());
@@ -108,6 +128,18 @@ public class Game {
                         }
                     }
                     gui.getMap().updateView();
+                    difficulty += DIFFICULTY_INCREASE;
+                    mainTrain.increaseVelocity(SPEED_INCREASE);
+                    if(difficulty > 5) {
+                        //spinning = true;
+                        spinningRandom = true;
+                    }
+                    if(difficulty > 10) {
+                        shaking = true;
+                    }
+                    if(difficulty > 15) {
+                        shrinking = true;
+                    }
                 }
             }
         });
@@ -119,12 +151,12 @@ public class Game {
         return currentGraph;
     }
 
-    public boolean isRunning() {
-        return running;
+    public boolean isPlaying() {
+        return playing;
     }
 
-    public void setRunning(boolean bool) {
-        running = bool;
+    public void setPlaying(boolean bool) {
+        playing = bool;
     }
 
     private void moveTowards(FieldObject fieldObject, Station to, double velocity) {
@@ -145,22 +177,36 @@ public class Game {
         fieldObject.moveTo(newXPos, newYPos);
     }
 
-    private void moveCircular(Station station, int xMid, int yMid, double velocity) {
-
+    private void moveCircular(Station station, int xMid, int yMid, double velocity, boolean randomDirection) {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
         double r = sqrt(dx*dx + dy*dy);
-        double newXPos, newYPos;
+        double newXPos, newYPos, newAngle;
         if (dx == 0) {
             newXPos = station.getX();
             newYPos = yMid > station.getY() ? (int) round(station.getY() + velocity) : (int) round(station.getY() - velocity);
         }
         else {
             double angle = atan2(dy, dx);
-            double newAngle = angle + velocity / r;
+            if (randomDirection) {
+                newAngle = angle + (velocity / r) * station.getDirection();
+            }
+            else {
+                newAngle = angle + (velocity / r);
+            }
             newXPos = xMid + cos(newAngle) * r;
             newYPos = yMid + sin(newAngle) * r;
         }
+        station.moveTo(newXPos, newYPos);
+    }
+
+    private void shrink(Station station, int xMid, int yMid, double velocity) {
+        double dx = xMid - station.getX();
+        double dy = yMid - station.getY();
+        double s = sqrt(dx * dx + dy * dy);
+        double newXPos, newYPos;
+        newXPos = station.getX() + (dx * velocity) / s;
+        newYPos = station.getY() + (dy * velocity) / s;
         station.moveTo(newXPos, newYPos);
     }
 
@@ -174,7 +220,6 @@ public class Game {
         score++;
         gui.getMap().updateScore(score);
     }
-
     // Create the victims
     private void createVictims(StationGraph currentGraph) {
         Random rnd = new Random();
@@ -254,7 +299,7 @@ public class Game {
             if (dist < radiusA || dist < radiusB) {
                 System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
                 // decrement score by 5;
-                score -= 5;
+                score -= 2;
                 gui.getMap().updateScore(score);
                 return true;
             }

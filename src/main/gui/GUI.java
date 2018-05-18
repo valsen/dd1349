@@ -47,6 +47,8 @@ public class GUI extends JFrame {
         System.out.println(map.getSize().height + "   " + map.getSize().width);
     }
 
+
+
     /**
      * @return the view of the map.
      */

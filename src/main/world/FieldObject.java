@@ -11,7 +11,7 @@ import static java.lang.Math.round;
 public abstract class FieldObject {
 
     private double xPos, yPos;
-    private double velocity = 2;
+    private double velocity = 1;
     private Station previousStation;
     private Station nextStation;
     private Station nextNextStation;
@@ -120,6 +120,10 @@ public abstract class FieldObject {
 
     public double getDistanceQuotient() {
         return distanceQuotient;
+    }
+
+    public void increaseVelocity(double increase) {
+        velocity += increase;
     }
 
     public int getCollisionRadius() {

@@ -37,7 +37,6 @@ public class Train extends FieldObject {
         }
     }
 
-
     public boolean isAtStation() {
         return atStation;
     }
