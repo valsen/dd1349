@@ -135,14 +135,22 @@ public class Game {
                         }
                         else if (frontalCollision(player, victim)) {
                             // decrement score and health;
-                            score -= 0.2;
-                            health -= 0.3;
-                            gui.getMap().updateScore(score);
-                            gui.getMap().updateHealth(health);
-                            gui.getMap().updateView();
-                            if (round(health) <= 0) {
-                                gui.displayGameOver();
-                                timer.stop();
+                            if (victim.getCollidable()) {
+                                score -= 10;
+                                health -= 5;
+                                gui.getMap().updateScore(score);
+                                gui.getMap().updateHealth(health);
+                                gui.flashRed();
+                                gui.getMap().updateView();
+                                gui.restoreBgColor();
+                                if (round(health) <= 0) {
+                                    gui.displayGameOver();
+                                    timer.stop();
+                                }
+                                victim.startCoolDownTimer();
+                            }
+                            else {
+                                gui.getMap().updateView();
                             }
                         }
                     }
