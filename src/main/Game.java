@@ -133,7 +133,7 @@ public class Game {
                         }
                         else if (frontalCollision(player, victim)) {
                             // decrement score and health;
-                            score -= 0.1;
+                            score -= 0.2;
                             health -= 0.3;
                             gui.getMap().updateScore(score);
                             gui.getMap().updateHealth(health);
