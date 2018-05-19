@@ -10,7 +10,6 @@ import javax.swing.Timer;
 public class Victim extends FieldObject {
 
     private String name;
-    private int coolOff;
     private Timer timer;
     private boolean collidable = true;
 

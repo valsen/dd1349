@@ -113,10 +113,10 @@ public class Game {
                             }
                         }
                         if(shrinking) {
-                            //shrink(station, station.getInitialXPos(), station.getInitialYPos());
+                            shrink(station, station.getInitialXPos(), station.getInitialYPos(), station.getInitialZPos());
                         }
                         if (expanding) {
-                            //expand(station, station.getInitialXPos(), station.getInitialYPos());
+                            expand(station, station.getInitialXPos(), station.getInitialYPos(), station.getInitialZPos());
                         }
                     }
                     adjustLocation(player);
@@ -158,39 +158,35 @@ public class Game {
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
                     player.increaseVelocity(SPEED_INCREASE);
-                    if(difficulty > 0) {
+                    if(difficulty > 5) {
                         spinning = true;
                     }
                     if(difficulty > 10) {
                         spinning = false;
-                        spinningRandom = true;
-                    }
-                    if(difficulty > 15) {
-                        spinningRandom = false;
                         shrinking = true;
                     }
-                    if (difficulty > 20) {
+                    if(difficulty > 15) {
                         shrinking = false;
                         spinning = true;
                     }
+                    if (difficulty > 20) {
+                        expanding = true;
+                    }
                     if (difficulty > 25) {
                         spinning = false;
-                        expanding = true;
                     }
                     if (difficulty > 30) {
                         expanding = false;
-                        spinningRandom = true;
+                        //spinningRandom = true;
                     }
                     if (difficulty > 35) {
-                        expanding = true;
-                        spinningRandom = false;
+                        //spinningRandom = false;
                     }
                     if (difficulty > 40) {
-                        expanding = false;
-                        shaking = true;
+                        //shaking = true;
                     }
                     if (difficulty > 45) {
-                        spinningRandom = true;
+                        //spinningRandom = true;
                     }
                 }
             }
@@ -256,62 +252,55 @@ public class Game {
         double dz = station.getZ() - zMid;
         Matrix matrix = new Matrix();
         double[] v = new double[]{dx, dy, dz};
-        double[] w = matrix.rotate(v, -0.005, 0.005, 0.005);
+        double[] w = matrix.rotate(v, -0.003, 0.003, 0.003);
         station.moveTo(w[0] + xMid, w[1] + yMid, w[2] + zMid);
     }
 
-    /*
-    private void movePerfectlyCircular(Station station, int xMid, int yMid, boolean randomDirection) {
-        double dx = station.getX() - xMid;
-        double dy = station.getY() - yMid;
-        double newXPos, newYPos, rotation;
-        //rotation amount in radians. positive -> clockwise, negative -> counter-clockwise
-        rotation = randomDirection ? (0.003 * station.getDirection()): -0.003;
-        //apply rotation matrix. dx and dy must be used since origin is in middle of the map instead of at (0, 0).
-        double newDx = dx*cos(rotation) - dy*sin(rotation);
-        double newDy = dx*sin(rotation) + dy*cos(rotation);
-        newXPos = newDx + xMid;
-        newYPos = newDy + yMid;
-        station.moveTo(newXPos, newYPos);
-    }
-    */
 
-    /*
-    private void shrink(Station station, double initialXPos, double initialYPos) {
+    private void shrink(Station station, double initialXPos, double initialYPos, double initialZPos) {
         double xPos = station.getX();
         double yPos = station.getY();
+        double zPos = station.getZ();
         int xMid = gui.getMap().getWidth() / 2;
         int yMid = gui.getMap().getHeight() / 2;
+        int zMid = gui.getMap().getDepth() / 2;
         double dx = (initialXPos - xMid) * 0.6 - (xPos - xMid);
         double dy = (initialYPos - yMid) * 0.6 - (yPos - yMid);
+        double dz = (initialZPos - zMid) * 0.6 - (zPos - zMid);
         double r = sqrt(dx*dx + dy*dy);
+        double r2 = sqrt(dx*dx + dz*dz);
         double angle = atan2(dy, dx);
+        double angle2 = atan2(dz, dx);
 
         if (abs(dx) > 0 || abs(dy) > 0) {
             xPos = xPos + cos(angle) * r * 0.004;
             yPos = yPos + sin(angle) * r * 0.004;
-            station.moveTo(xPos, yPos);
+            zPos = zPos + sin(angle2) * r2 * 0.004;
+            station.moveTo(xPos, yPos, zPos);
         }
     }
-    */
 
-    /*
-    private void expand(Station station, double initialXPos, double initialYPos) {
+
+    private void expand(Station station, double initialXPos, double initialYPos, double initialZPos) {
         double xPos = station.getX();
         double yPos = station.getY();
+        double zPos = station.getZ();
         double dx = initialXPos - xPos;
         double dy = initialYPos - yPos;
+        double dz = initialZPos - zPos;
         double r = sqrt(dx*dx + dy*dy);
+        double r2 = sqrt(dx*dx + dz*dz);
         double angle = atan2(dy, dx);
+        double angle2 = atan2(dz, dx);
 
         if (abs(dx) > 0 || abs(dy) > 0) {
             xPos = xPos + cos(angle) * r  * 0.01;
             yPos = yPos + sin(angle) * r * 0.01;
-            station.moveTo(xPos, yPos);
+            zPos = zPos + sin(angle2) * r2 * 0.01;
+            station.moveTo(xPos, yPos, zPos);
         }
 
     }
-    */
 
     private void updateStations(FieldObject fieldObject) {
         fieldObject.setPreviousStation(fieldObject.getNextStation());
