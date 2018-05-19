@@ -286,8 +286,8 @@ public class Game {
         double angle = atan2(dy, dx);
 
         if (abs(dx) > 0 || abs(dy) > 0) {
-            xPos = xPos + cos(angle) * r  * 0.004;
-            yPos = yPos + sin(angle) * r * 0.004;
+            xPos = xPos + cos(angle) * r  * 0.01;
+            yPos = yPos + sin(angle) * r * 0.01;
             station.moveTo(xPos, yPos);
         }
 
