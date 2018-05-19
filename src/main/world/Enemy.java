@@ -7,13 +7,13 @@ import java.io.File;
 import java.util.Random;
 import javax.swing.Timer;
 
-public class Victim extends FieldObject {
+public class Enemy extends FieldObject {
 
     private String name;
     private Timer timer;
     private boolean collidable = true;
 
-    public Victim(int x, int y, int z, String name, String filepath) {
+    public Enemy(int x, int y, int z, String name, String filepath) {
         super(x, y, z, new File(filepath));
         this.name = name;
         setVelocity(1 + new Random().nextDouble() * 0.5);
