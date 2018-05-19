@@ -22,7 +22,7 @@ public class GUI extends JFrame {
         //setLocation(50, 50);
         setBackground(BG_COLOR);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(600, 600));
 
         map = new MapView(this, game, height, width, depth);
 

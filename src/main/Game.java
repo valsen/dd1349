@@ -36,7 +36,7 @@ public class Game {
     private static final double HEIGHT_TO_WIDTH_FACTOR = 1;
     // public static final int HEIGHT = (int) Math.round(WIDTH * WIDTH_TO_HEIGHT_FACTOR);
     public static final int WIDTH = (int) Math.round(HEIGHT*HEIGHT_TO_WIDTH_FACTOR);
-    public static final int DEPTH = 500;
+    public static final int DEPTH = HEIGHT;
     private static final int MAX_ENEMIES = 5;
     private double difficulty = 0;
     private int level = 1;
