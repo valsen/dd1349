@@ -25,7 +25,7 @@ public abstract class FieldObject {
         this.yPos = y;
         this.iconFile = iconFile;
         setIcon(iconFile);
-        System.out.println(getCollisionRadius());
+        //System.out.println(getCollisionRadius());
     }
 
     /**

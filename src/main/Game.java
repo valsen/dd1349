@@ -35,6 +35,7 @@ public class Game {
     public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
     private static final int MAX_VICTIMS = 5;
     private double difficulty = 0;
+    private int level = 1;
     private boolean spinning = false;
     private boolean spinningRandom = false;
     private boolean shaking = false;
@@ -125,16 +126,15 @@ public class Game {
                         victim.updateDistanceQuotient();
                         if (collisionFromBehind(player, victim)) {
                             it.remove();
-                            // increment score by 5;
+                            // increment score by 10;
                             score += 10;
                             gui.getMap().updateScore(score);
                             gui.getMap().updateView();
                         }
                         else if (frontalCollision(player, victim)) {
-                            // decrement score by 5;
+                            // decrement score and health;
                             score -= 0.1;
                             health -= 0.3;
-                            System.out.println("Health: " + (int)round(health));
                             gui.getMap().updateScore(score);
                             gui.getMap().updateHealth(health);
                             gui.getMap().updateView();
@@ -363,7 +363,7 @@ public class Game {
         double dist = Math.sqrt(dx*dx + dy*dy);
         if (onSameRail(player, enemy) && player.getNextStation().equals(enemy.getNextStation())) {
             if (dist < radiusA || dist < radiusB) {
-                System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
+                //System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
                 return true;
             }
         }
@@ -378,7 +378,7 @@ public class Game {
         double dist = Math.sqrt(dx*dx + dy*dy);
         if (onSameRail(player, enemy) && player.getNextStation().equals(enemy.getPreviousStation())) {
             if (dist < radiusA || dist < radiusB) {
-                System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
+                //System.out.println("dist = " + dist + ", rA = " + radiusA + ", rB = " + radiusB);
                 return true;
             }
         }

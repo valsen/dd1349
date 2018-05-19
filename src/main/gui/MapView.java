@@ -423,7 +423,6 @@ public class MapView extends JPanel {
             objective.setSize(objective.getPreferredSize());
             objective.setLocation(size.width / 2 - objective.getSize().width / 2,
                     100);
-            System.out.println(objective.getText());
         }
     }
 
@@ -437,7 +436,6 @@ public class MapView extends JPanel {
             commandLabel.setSize(commandLabel.getPreferredSize());
             commandLabel.setLocation(size.width / 2 - commandLabel.getSize().width / 2,
                     130);
-            System.out.println(commandLabel.getText());
         }
     }
 
@@ -461,7 +459,6 @@ public class MapView extends JPanel {
                     size.height / 2 - bigCountDown.getSize().height / 2);
         }
         bigCountDown.setText("" + timeLeft);
-        System.out.println(timeLeft);
     }
 
     public void removeBigCountDown() {
@@ -471,7 +468,6 @@ public class MapView extends JPanel {
     public void updateScore(double score) {
         scoreCounter.setText("Score: " + (int)round(score));
         scoreCounter.setSize(scoreCounter.getPreferredSize());
-        System.out.println(score);
     }
 
     public void updateHealth(double health) {
@@ -480,7 +476,6 @@ public class MapView extends JPanel {
         if (health < 20) healthCounter.setForeground(Color.RED);
         healthCounter.setText("Health: " + (int)round(health));
         healthCounter.setSize(healthCounter.getPreferredSize());
-        System.out.println(health);
     }
 
     public void removeGameOver() {
