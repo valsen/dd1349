@@ -2,6 +2,7 @@ package main;
 
 import main.gui.GUI;
 import main.world.*;
+import main.world.graphs.StarGraph;
 import main.world.graphs.TestGraph;
 
 import javax.swing.Timer;
@@ -46,6 +47,7 @@ public class Game {
 
     public Game() {
         graphs.add(new TestGraph());
+        //graphs.add(new StarGraph());
         currentGraph = graphs.get(0);
         gui = new GUI(this, WIDTH, DEPTH);
         createVictims(currentGraph);
@@ -97,10 +99,10 @@ public class Game {
                     }
                     for (Station station : currentGraph.getStations()) {
                         if(spinning) {
-                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), false);
+                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, false);
                         }
                         if(spinningRandom) {
-                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, station.getVelocity(), true);
+                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, true);
                         }
                         if(shaking) {
                             if (rng.nextDouble() < 0.2) {
@@ -108,7 +110,7 @@ public class Game {
                             }
                         }
                         if(shrinking) {
-                            shrink(station, station.getInitialXPos(), station.getInitialYPos(), 0.1);
+                            shrink(station, station.getInitialXPos(), station.getInitialYPos());
                         }
                         if (expanding) {
                             expand(station, station.getInitialXPos(), station.getInitialYPos(), 0.1);
@@ -224,7 +226,7 @@ public class Game {
         station.moveTo(newXPos, newYPos);
     }
 
-    private void movePerfectlyCircular(Station station, int xMid, int yMid, double velocity, boolean randomDirection) {
+    private void movePerfectlyCircular(Station station, int xMid, int yMid, boolean randomDirection) {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
         double r = sqrt(dx*dx + dy*dy);
@@ -241,7 +243,7 @@ public class Game {
         station.moveTo(newXPos, newYPos);
     }
 
-    private void shrink(Station station, double initialXPos, double initialYPos, double velocity) {
+    private void shrink(Station station, double initialXPos, double initialYPos) {
         double xPos = station.getX();
         double yPos = station.getY();
         int xMid = gui.getMap().getWidth() / 2;
