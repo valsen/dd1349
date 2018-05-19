@@ -17,7 +17,7 @@ public class Victim extends FieldObject {
     public Victim(int x, int y, int z, String name, String filepath) {
         super(x, y, z, new File(filepath));
         this.name = name;
-        setVelocity(0.5 + new Random().nextDouble() * 0.5);
+        setVelocity(1 + new Random().nextDouble() * 0.5);
     }
 
     public String getName() {
