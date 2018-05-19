@@ -422,7 +422,7 @@ public class MapView extends JPanel {
             objective.setText(OBJECTIVE_TEXT);
             objective.setSize(objective.getPreferredSize());
             objective.setLocation(size.width / 2 - objective.getSize().width / 2,
-                    100);
+                    80);
         }
     }
 
@@ -435,7 +435,7 @@ public class MapView extends JPanel {
             commandLabel.setText(GAME_COMMAND);
             commandLabel.setSize(commandLabel.getPreferredSize());
             commandLabel.setLocation(size.width / 2 - commandLabel.getSize().width / 2,
-                    130);
+                    110);
         }
     }
 

@@ -172,6 +172,17 @@ public class Game {
                         expanding = false;
                         spinningRandom = true;
                     }
+                    if (difficulty > 35) {
+                        expanding = true;
+                        spinningRandom = false;
+                    }
+                    if (difficulty > 40) {
+                        expanding = false;
+                        shaking = true;
+                    }
+                    if (difficulty > 45) {
+                        spinningRandom = true;
+                    }
                 }
             }
         });
