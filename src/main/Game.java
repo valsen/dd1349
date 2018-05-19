@@ -5,6 +5,7 @@ import main.world.*;
 import main.world.graphs.TestGraph;
 
 import javax.swing.Timer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -30,9 +31,11 @@ public class Game {
     private boolean playing = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
-    public static final int WIDTH = 700;
-    private static final double WIDTH_TO_HEIGHT_FACTOR = 1;//1536.0 / 2048.0;
-    public static final int HEIGHT = (int) Math.round(WIDTH * WIDTH_TO_HEIGHT_FACTOR);
+    public static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+    // private static final double WIDTH_TO_HEIGHT_FACTOR = 1;//1536.0 / 2048.0;
+    private static final double HEIGHT_TO_WIDTH_FACTOR = 1;
+    // public static final int HEIGHT = (int) Math.round(WIDTH * WIDTH_TO_HEIGHT_FACTOR);
+    public static final int WIDTH = (int) Math.round(HEIGHT*HEIGHT_TO_WIDTH_FACTOR);
     public static final int DEPTH = 500;
     private static final int MAX_VICTIMS = 5;
     private double difficulty = 0;
