@@ -2,7 +2,6 @@ package main;
 
 import main.gui.GUI;
 import main.world.*;
-import main.world.graphs.StarGraph;
 import main.world.graphs.TestGraph;
 
 import javax.swing.Timer;
@@ -32,8 +31,9 @@ public class Game {
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
     public static final int WIDTH = 1024;
-    private static final double WIDTH_TO_DEPTH_FACTOR = 1536.0 / 2048.0;
-    public static final int DEPTH = (int) Math.round(WIDTH * WIDTH_TO_DEPTH_FACTOR);
+    private static final double WIDTH_TO_HEIGHT_FACTOR = 1;//1536.0 / 2048.0;
+    public static final int HEIGHT = (int) Math.round(WIDTH * WIDTH_TO_HEIGHT_FACTOR);
+    public static final int DEPTH = 500;
     private static final int MAX_VICTIMS = 5;
     private double difficulty = 0;
     private int level = 1;
@@ -49,13 +49,13 @@ public class Game {
         graphs.add(new TestGraph());
         //graphs.add(new StarGraph());
         currentGraph = graphs.get(0);
-        gui = new GUI(this, WIDTH, DEPTH);
+        gui = new GUI(this, WIDTH, HEIGHT, DEPTH);
         createVictims(currentGraph);
         setStartingStations(currentGraph);
         createMainTrain();
     }
     private void createMainTrain() {
-        player = new Train(startingStation.getRoundedX(), startingStation.getRoundedY());
+        player = new Train(startingStation.getRoundedX(), startingStation.getRoundedY(), startingStation.getRoundedZ());
         player.setPreviousStation(startingStation);
         player.setNextStation(startNext);
         player.setNextNextStation(startNextNext);
@@ -68,6 +68,7 @@ public class Game {
         gui.getMap().updateView();
 
         // count-down to start
+        /*
         countDownTimer = new Timer(1000, new ActionListener() {
             int countDown = 5;
             @Override
@@ -86,7 +87,8 @@ public class Game {
         });
         countDownTimer.setInitialDelay(0);
         countDownTimer.start();
-
+        */
+        playing = true;
         timer = new Timer(1000 / fps, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,21 +101,22 @@ public class Game {
                     }
                     for (Station station : currentGraph.getStations()) {
                         if(spinning) {
-                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, false);
+                            rotate3d(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, gui.getMap().getDepth() / 2);
+                            //movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, false);
                         }
                         if(spinningRandom) {
-                            movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, true);
+                            //movePerfectlyCircular(station, gui.getMap().getWidth() / 2, gui.getMap().getHeight() / 2, true);
                         }
                         if(shaking) {
                             if (rng.nextDouble() < 0.2) {
-                                station.shake();
+                                //station.shake();
                             }
                         }
                         if(shrinking) {
-                            shrink(station, station.getInitialXPos(), station.getInitialYPos());
+                            //shrink(station, station.getInitialXPos(), station.getInitialYPos());
                         }
                         if (expanding) {
-                            expand(station, station.getInitialXPos(), station.getInitialYPos());
+                            //expand(station, station.getInitialXPos(), station.getInitialYPos());
                         }
                     }
                     adjustLocation(player);
@@ -211,26 +214,30 @@ public class Game {
     private void moveTowards(FieldObject fieldObject, Station to, double velocity) {
         double dx = to.getX() - fieldObject.getX();
         double dy = to.getY() - fieldObject.getY();
-        double s = sqrt(dx * dx + dy * dy);
-        double newXPos, newYPos;
+        double dz = to.getZ() - fieldObject.getZ();
+        double s = sqrt(dx * dx + dy * dy + dz * dz);
+        double newXPos, newYPos, newZPos;
         if (s < velocity) {
             newXPos = to.getX();
             newYPos = to.getY();
+            newZPos = to.getZ();
             if (!(fieldObject instanceof Station)){
                 updateStations(fieldObject);
             }
         } else {
             newXPos = fieldObject.getX() + (dx * velocity) / s;
             newYPos = fieldObject.getY() + (dy * velocity) / s;
+            newZPos = fieldObject.getZ() + (dz * velocity) / s;
         }
-        fieldObject.moveTo(newXPos, newYPos);
+        fieldObject.moveTo(newXPos, newYPos, newZPos);
     }
 
-    private void moveCircular(Station station, int xMid, int yMid, double velocity, boolean randomDirection) {
+    private void moveCircular(Station station, int xMid, int yMid, int zMid, double velocity, boolean randomDirection) {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
-        double r = sqrt(dx*dx + dy*dy);
-        double newXPos, newYPos, newAngle;
+        double dz = station.getZ() - zMid;
+        double r = sqrt(dx*dx + dy*dy + dz*dz);
+        double newXPos, newYPos, newZPos, newAngle;
         double angle = atan2(dy, dx);
         if (randomDirection) {
             newAngle = angle + (velocity / r) * station.getDirection();
@@ -240,9 +247,20 @@ public class Game {
         }
         newXPos = xMid + cos(newAngle) * r;
         newYPos = yMid + sin(newAngle) * r;
-        station.moveTo(newXPos, newYPos);
+        station.moveTo(newXPos, newYPos, station.getZ());
     }
 
+    private void rotate3d(Station station, int xMid, int yMid, int zMid) {
+        double dx = station.getX() - xMid;
+        double dy = station.getY() - yMid;
+        double dz = station.getZ() - zMid;
+        Matrix matrix = new Matrix();
+        double[] v = new double[]{dx, dy, dz};
+        double[] w = matrix.rotate(v, -0.005, 0.005, 0.005);
+        station.moveTo(w[0] + xMid, w[1] + yMid, w[2] + zMid);
+    }
+
+    /*
     private void movePerfectlyCircular(Station station, int xMid, int yMid, boolean randomDirection) {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
@@ -256,7 +274,9 @@ public class Game {
         newYPos = newDy + yMid;
         station.moveTo(newXPos, newYPos);
     }
+    */
 
+    /*
     private void shrink(Station station, double initialXPos, double initialYPos) {
         double xPos = station.getX();
         double yPos = station.getY();
@@ -273,7 +293,9 @@ public class Game {
             station.moveTo(xPos, yPos);
         }
     }
+    */
 
+    /*
     private void expand(Station station, double initialXPos, double initialYPos) {
         double xPos = station.getX();
         double yPos = station.getY();
@@ -289,6 +311,7 @@ public class Game {
         }
 
     }
+    */
 
     private void updateStations(FieldObject fieldObject) {
         fieldObject.setPreviousStation(fieldObject.getNextStation());
@@ -310,7 +333,7 @@ public class Game {
                 double ratio = rnd.nextDouble() * 0.6 + 0.2;
                 if (fromStation != null && toStation != null) {
                     double[] victimCoords = getPosition(fromStation, toStation, ratio);
-                    Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]), victimName,
+                    Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]), (int)round(victimCoords[2]), victimName,
                             "src/Sprites/victimIcons/" + imageFileName);
                     victimNames.add(victimName);
                     victimStrings.put(victimName, "src/Sprites/victimIcons/" + imageFileName);
@@ -336,11 +359,15 @@ public class Game {
     private double[] getPosition(Station from, Station to, double ratio) {
         double dx = to.getX() - from.getX();
         double dy = (to.getY() - from.getY());
-        double hyp = sqrt(pow(dx,2) + pow(dy, 2));
+        double dz = to.getZ() - from.getZ();
+        double hyp1 = sqrt(dx*dx + dy*dy);
+        double hyp2 = sqrt(dx*dx + dz*dz);
         double angle = atan2(dy, dx);
-        double xPos = (from.getX() + cos(angle) * hyp * ratio);
-        double yPos = (from.getY() + sin(angle) * hyp * ratio);
-        return new double[]{xPos, yPos};
+        double angle2 = atan2(dz, dx);
+        double xPos = (from.getX() + cos(angle) * hyp1 * ratio);
+        double yPos = (from.getY() + sin(angle) * hyp1 * ratio);
+        double zPos = (from.getZ() + sin(angle2) * hyp2 * ratio);
+        return new double[]{xPos, yPos, zPos};
     }
 
     public double getAngle(FieldObject object) {
@@ -410,13 +437,13 @@ public class Game {
     private void adjustLocation(FieldObject movingObject) {
         double[] coords = getPosition(movingObject.getPreviousStation(), movingObject.getNextStation(),
                 movingObject.getDistanceQuotient());
-        movingObject.moveTo(coords[0], coords[1]);
+        movingObject.moveTo(coords[0], coords[1], coords[2]);
     }
 
     private void spawnVictimBetweenStations(Station fromStation, Station toStation) {
         String victimName = victimNames.get(rng.nextInt(victimNames.size()));
         double[] victimCoords = getPosition(fromStation, toStation, rng.nextDouble()*0.6 + 0.2);
-        Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]),
+        Victim victim = new Victim((int)round(victimCoords[0]), (int)round(victimCoords[1]), (int)round(victimCoords[2]),
                 victimName, victimStrings.get(victimName));
         victim.setPreviousStation(fromStation);
         victim.setNextStation(toStation);
