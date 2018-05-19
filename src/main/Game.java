@@ -140,9 +140,7 @@ public class Game {
                                 health -= 5;
                                 gui.getMap().updateScore(score);
                                 gui.getMap().updateHealth(health);
-                                gui.flashRed();
                                 gui.getMap().updateView();
-                                gui.restoreBgColor();
                                 if (round(health) <= 0) {
                                     gui.displayGameOver();
                                     timer.stop();
