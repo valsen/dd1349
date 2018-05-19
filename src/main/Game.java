@@ -30,7 +30,7 @@ public class Game {
     private boolean playing = false;
     private ArrayList<Victim> victims = new ArrayList<>();
     private static final int fps = 60;
-    public static final int WIDTH = 1024;
+    public static final int WIDTH = 700;
     private static final double WIDTH_TO_HEIGHT_FACTOR = 1;//1536.0 / 2048.0;
     public static final int HEIGHT = (int) Math.round(WIDTH * WIDTH_TO_HEIGHT_FACTOR);
     public static final int DEPTH = 500;
@@ -250,9 +250,8 @@ public class Game {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
         double dz = station.getZ() - zMid;
-        Matrix matrix = new Matrix();
         double[] v = new double[]{dx, dy, dz};
-        double[] w = matrix.rotate(v, -0.003, 0.003, 0.003);
+        double[] w = Transformations.rotate(v, -0.003, 0.003, 0.003);
         station.moveTo(w[0] + xMid, w[1] + yMid, w[2] + zMid);
     }
 
