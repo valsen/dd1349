@@ -16,7 +16,7 @@ public class GUI extends JFrame {
      * @param height The simulation's height.
      * @param width  The simulation's WIDTH.
      */
-    public GUI(Game game, int width, int height)
+    public GUI(Game game, int width, int height, int depth)
     {
         setTitle("Dysfunctional train game");
         //setLocation(50, 50);
@@ -24,7 +24,7 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 600));
 
-        map = new MapView(this, game, height, width);
+        map = new MapView(this, game, height, width, depth);
 
         Container contents = getContentPane();
         contents.add(map, BorderLayout.CENTER);

@@ -21,8 +21,8 @@ public class Train extends FieldObject {
     /**
      * Creates a train at the specified location.
      */
-    public Train(int x, int y) {
-        super(x, y, icon);
+    public Train(int x, int y, int z) {
+        super(x, y, z, icon);
     }
 
     public void toggleRoute(ArrayList<Station> list) {

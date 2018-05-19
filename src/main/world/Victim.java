@@ -14,8 +14,8 @@ public class Victim extends FieldObject {
     private Timer timer;
     private boolean collidable = true;
 
-    public Victim(int x, int y, String name, String filepath) {
-        super(x, y, new File(filepath));
+    public Victim(int x, int y, int z, String name, String filepath) {
+        super(x, y, z, new File(filepath));
         this.name = name;
         setVelocity(0.5 + new Random().nextDouble() * 0.5);
     }

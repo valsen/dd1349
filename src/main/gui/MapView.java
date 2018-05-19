@@ -44,13 +44,14 @@ public class MapView extends JPanel {
     private int gridWidth, gridHeight;
     private double xScale, yScale;
     private Dimension size;
+    private int depth;
     private Graphics g;
     private Graphics2D g2;
 
     /**
      * Create a new MapView component.
      */
-    MapView(GUI gui, Game game, int height, int width)
+    MapView(GUI gui, Game game, int height, int width, int depth)
     {
         this.gui = gui;
         this.game = game;
@@ -61,6 +62,7 @@ public class MapView extends JPanel {
         gridHeight = height;
         gridWidth = width;
         size = new Dimension(width, height);
+        this.depth = depth;
         try {
             trainIcon = ImageIO.read(new File("src/Sprites/mainship.png"));
         }
@@ -480,5 +482,9 @@ public class MapView extends JPanel {
 
     public void removeGameOver() {
         remove(gameOver);
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }

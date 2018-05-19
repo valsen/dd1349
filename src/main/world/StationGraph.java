@@ -2,18 +2,14 @@ package main.world;
 
 import main.Game;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
 import static java.lang.Math.*;
-import static java.lang.Math.sin;
 
 public abstract class StationGraph {
 
@@ -39,9 +35,10 @@ public abstract class StationGraph {
             Scanner scanner = new Scanner(stationsFile);
             while (scanner.hasNext()) {
                 String[] stationInfo = scanner.nextLine().split("/");
-                Location stationLocation = new Location((int) round(Double.valueOf(stationInfo[2]) * Game.DEPTH),
+                Location stationLocation = new Location((int) round(Double.valueOf(stationInfo[2]) * Game.HEIGHT),
                         (int) round(Double.valueOf(stationInfo[1]) * Game.WIDTH));
-                stations.add(new Station(stationLocation.getX(), stationLocation.getY(), stationInfo[0], Integer.valueOf(stationInfo[3])));
+                int z = (int) round(Double.valueOf(stationInfo[3]) * Game.DEPTH);
+                stations.add(new Station(stationLocation.getX(), stationLocation.getY(), z, stationInfo[0], Integer.valueOf(stationInfo[4])));
             }
         } catch(FileNotFoundException e) {
             System.out.println("Failed to read stations file.");
