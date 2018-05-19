@@ -113,7 +113,7 @@ public class Game {
                             shrink(station, station.getInitialXPos(), station.getInitialYPos());
                         }
                         if (expanding) {
-                            expand(station, station.getInitialXPos(), station.getInitialYPos(), 0.1);
+                            expand(station, station.getInitialXPos(), station.getInitialYPos());
                         }
                     }
                     adjustLocation(player);
@@ -155,7 +155,7 @@ public class Game {
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
                     player.increaseVelocity(SPEED_INCREASE);
-                    if(difficulty > 5) {
+                    if(difficulty > 0) {
                         spinning = true;
                     }
                     if(difficulty > 10) {
@@ -246,17 +246,14 @@ public class Game {
     private void movePerfectlyCircular(Station station, int xMid, int yMid, boolean randomDirection) {
         double dx = station.getX() - xMid;
         double dy = station.getY() - yMid;
-        double r = sqrt(dx*dx + dy*dy);
-        double newXPos, newYPos, newAngle;
-        double angle = atan2(dy, dx);
-        if (randomDirection) {
-            newAngle = angle + 0.003 * station.getDirection();
-        }
-        else {
-            newAngle = angle + 0.003;
-        }
-        newXPos = xMid + cos(newAngle) * r;
-        newYPos = yMid + sin(newAngle) * r;
+        double newXPos, newYPos, rotation;
+        //rotation amount in radians. positive -> clockwise, negative -> counter-clockwise
+        rotation = randomDirection ? (0.003 * station.getDirection()): -0.003;
+        //apply rotation matrix. dx and dy must be used since origin is in middle of the map instead of at (0, 0).
+        double newDx = dx*cos(rotation) - dy*sin(rotation);
+        double newDy = dx*sin(rotation) + dy*cos(rotation);
+        newXPos = newDx + xMid;
+        newYPos = newDy + yMid;
         station.moveTo(newXPos, newYPos);
     }
 
@@ -277,7 +274,7 @@ public class Game {
         }
     }
 
-    private void expand(Station station, double initialXPos, double initialYPos, double velocity) {
+    private void expand(Station station, double initialXPos, double initialYPos) {
         double xPos = station.getX();
         double yPos = station.getY();
         double dx = initialXPos - xPos;
