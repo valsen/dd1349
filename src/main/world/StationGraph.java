@@ -121,7 +121,7 @@ public abstract class StationGraph {
         }
     }
 
-    public File getVictimsFile() {
+    public File getEnemiesFile() {
         return victimsFile;
     }
 

@@ -8,7 +8,7 @@ import java.util.*;
 import java.io.File;
 import java.util.List;
 
-public class Train extends FieldObject {
+public class Player extends FieldObject {
 
     private boolean atStation = false;
     private int stationCounter = 0;
@@ -21,7 +21,7 @@ public class Train extends FieldObject {
     /**
      * Creates a train at the specified location.
      */
-    public Train(int x, int y, int z) {
+    public Player(int x, int y, int z) {
         super(x, y, z, icon);
     }
 

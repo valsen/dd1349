@@ -21,9 +21,9 @@ public class MapView extends JPanel {
     
     private static final Color INACTIVE_RAIL_COLOR = new Color(160, 160, 160);
     private static final Color ACTIVE_RAIL_COLOR = new Color(255, 101, 162);
-    private static final int TRAIN_SIZE = 50;
+    private static final int PLAYER_SIZE = 50;
     private static final int STATION_SIZE = 15;
-    private static final int VICTIM_SIZE = 50;
+    private static final int ENEMY_SIZE = 50;
     private static final String OBJECTIVE_TEXT = "Hit enemies from behind to collect points. Avoid frontal collisions!";
     private static final String GAME_COMMAND = "Use spacebar to control your spaceship's route";
     private final double GRID_VIEW_SCALING_FACTOR = 1;
@@ -38,8 +38,8 @@ public class MapView extends JPanel {
     private StationGraph currentGraph;
     private BufferedImage bgImage;
     private Image fieldImage;
-    private Image trainIcon;
-    private Image scaledTrainIcon;
+    private Image playerIcon;
+    private Image scaledPlayerIcon;
     private Map<Station, StationLabel> stationLabels = new HashMap<>();
     private int gridWidth, gridHeight;
     private double xScale, yScale;
@@ -64,12 +64,12 @@ public class MapView extends JPanel {
         size = new Dimension(width, height);
         this.depth = depth;
         try {
-            trainIcon = ImageIO.read(new File("src/Sprites/mainship.png"));
+            playerIcon = ImageIO.read(new File("src/Sprites/mainship.png"));
         }
         catch (IOException e) {
             System.out.println("Failed to load all icons.");
         }
-        scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        scaledPlayerIcon = playerIcon.getScaledInstance(PLAYER_SIZE, PLAYER_SIZE, 0);
         createScoreCounter();
         createHealthCounter();
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
@@ -118,7 +118,7 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Update the view of the map and trains.
+     * Update the view of the gamestate.
      */
     public void updateView()
     {
@@ -130,8 +130,8 @@ public class MapView extends JPanel {
         highlightActiveRoute();
         drawStations();
         //drawStationLabels();
-        drawVictims();
-        drawTrain();
+        drawEnemies();
+        drawPlayer();
         repaint();
     }
 
@@ -175,7 +175,7 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Create buffered image of the whole map except for the trains.
+     * Create buffered image of the whole map except for the player and enemies.
      */
     private void drawNewBackground() {
         bgImage = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
@@ -230,21 +230,21 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Highlight the rail from the train's current position
+     * Highlight the path from the player's current position
      * to the next-next station.
      */
     private void highlightActiveRoute() {
-        Train train = game.getPlayer();
-        Station next = train.getNextStation();
-        Station nextNext = train.getNextNextStation();
-        int trainXPos = (int) (train.getX() * xScale + (xScale / 2));
-        int trainYPos = (int) (train.getY() * yScale + (yScale / 2));
+        Player player = game.getPlayer();
+        Station next = player.getNextStation();
+        Station nextNext = player.getNextNextStation();
+        int playerXPos = (int) (player.getX() * xScale + (xScale / 2));
+        int playerYPos = (int) (player.getY() * yScale + (yScale / 2));
         int nextXPos = (int) (next.getX() * xScale + (xScale / 2));
         int nextYPos = (int) (next.getY() * yScale + (yScale / 2));
         int nextNextXPos = (int) (nextNext.getX() * xScale + (xScale / 2));
         int nextNextYPos = (int) (nextNext.getY() * yScale + (yScale / 2));
         g2.setColor(ACTIVE_RAIL_COLOR);
-        g2.drawLine(trainXPos, trainYPos, nextXPos, nextYPos);
+        g2.drawLine(playerXPos, playerYPos, nextXPos, nextYPos);
         g2.drawLine(nextXPos, nextYPos, nextNextXPos, nextNextYPos);
     }
 
@@ -325,50 +325,50 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Draw the trains.
+     * Draw the player.
      */
-    private void drawTrain() {
-        drawCenteredTrain(game.getPlayer().getRoundedX(), game.getPlayer().getRoundedY());
+    private void drawPlayer() {
+        drawCenteredPlayer(game.getPlayer().getRoundedX(), game.getPlayer().getRoundedY());
     }
 
     /**
-     * Draw a train centered at the specified row and column.
-     * @param x The column of the train.
-     * @param y The row of the train.
+     * Draw the player centered at the specified row and column.
+     * @param x The column of the player.
+     * @param y The row of the player.
      */
-    private void drawCenteredTrain(int x, int y) {
-        x = (int) (x * xScale - (TRAIN_SIZE) / 2 + xScale / 2);
-        y = (int) (y * yScale - (TRAIN_SIZE / 2) + yScale / 2);
+    private void drawCenteredPlayer(int x, int y) {
+        x = (int) (x * xScale - (PLAYER_SIZE) / 2 + xScale / 2);
+        y = (int) (y * yScale - (PLAYER_SIZE / 2) + yScale / 2);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.rotate(game.getAngle(game.getPlayer()), x + TRAIN_SIZE/2, y + TRAIN_SIZE/2);
-        g2d.drawImage(scaledTrainIcon, x, y, null);
-        g2d.rotate(-(game.getAngle(game.getPlayer())), x + TRAIN_SIZE/2, y + TRAIN_SIZE/2);
+        g2d.rotate(game.getAngle(game.getPlayer()), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
+        g2d.drawImage(scaledPlayerIcon, x, y, null);
+        g2d.rotate(-(game.getAngle(game.getPlayer())), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
     }
 
     /**
-     * Draw the victims.
+     * Draw the enemies.
      */
-    private void drawVictims() {
-        for (Victim victim : game.getVictims()) {
-            drawCenteredVictim(victim, victim.getRoundedX(), victim.getRoundedY());
+    private void drawEnemies() {
+        for (Enemy enemy : game.getEnemies()) {
+            drawCenteredEnemy(enemy, enemy.getRoundedX(), enemy.getRoundedY());
         }
     }
 
     /**
-     * Draw a victim centered at the specified row and column.
-     * @param victim the victim to be drawn.
-     * @param x the column of the victim.
-     * @param y the row of the victim.
+     * Draw a enemy centered at the specified row and column.
+     * @param enemy the enemy to be drawn.
+     * @param x the column of the enemy.
+     * @param y the row of the enemy.
      */
-    private void drawCenteredVictim(Victim victim, int x, int y) {
-        Image victimIcon = victim.getIcon();//.getScaledInstance((int)round(victim.getIcon().getWidth(null)/1.5),
-                                                              //(int)round(victim.getIcon().getHeight(null)/1.5), 0);
-        x = (int) (x * xScale - victimIcon.getWidth(null) / 2 + xScale/2);
-        y = (int) (y * yScale - victimIcon.getHeight(null) / 2 + yScale/2);
+    private void drawCenteredEnemy(Enemy enemy, int x, int y) {
+        Image enemyIcon = enemy.getIcon();//.getScaledInstance((int)round(enemy.getIcon().getWidth(null)/1.5),
+                                                              //(int)round(enemy.getIcon().getHeight(null)/1.5), 0);
+        x = (int) (x * xScale - enemyIcon.getWidth(null) / 2 + xScale/2);
+        y = (int) (y * yScale - enemyIcon.getHeight(null) / 2 + yScale/2);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.rotate(game.getAngle(victim), x + VICTIM_SIZE/2, y + VICTIM_SIZE/2);
-        g2d.drawImage(victimIcon, x, y, null);
-        g2d.rotate(-(game.getAngle(victim)), x + VICTIM_SIZE/2, y + VICTIM_SIZE/2);
+        g2d.rotate(game.getAngle(enemy), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
+        g2d.drawImage(enemyIcon, x, y, null);
+        g2d.rotate(-(game.getAngle(enemy)), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
     }
 
     /**

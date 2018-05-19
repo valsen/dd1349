@@ -16,12 +16,12 @@ public class Transformations {
         return new int[]{v[0], v[1]};
     }
 
-    private static double[] rotateAroundX(double[] v, double theta) {
+    private static double[] rotateAroundX(double[] v, double pitch) {
         double[][] a = new double[][]{
 
                 {1,          0,             0},
-                {0, cos(theta),   -sin(theta)},
-                {0, sin(theta),    cos(theta)}};
+                {0, cos(pitch),   -sin(pitch)},
+                {0, sin(pitch),    cos(pitch)}};
 
         double[] w = new double[3];
         for (int row = 0; row < 3; row++) {
@@ -33,29 +33,29 @@ public class Transformations {
         return w;
     }
 
-    private static double[] rotateAroundZ(double[] v, double theta) {
+    private static double[] rotateAroundY(double[] v, double yaw) {
         double[][] a = new double[][]{
 
-                {cos(theta), -sin(theta), 0},
-                {sin(theta), cos(theta),  0},
-                {0,       0,              1}};
-
-        double[] w = new double[3];
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                w[row] += a[row][col] * v[col];
-            }
-        }
-
-        return w;
-    }
-
-    private static double[] rotateAroundY(double[] v, double theta) {
-        double[][] a = new double[][]{
-
-                {cos(theta),  0,       sin(theta)},
+                {cos(yaw),  0,       sin(yaw)},
                 {0         ,  1,                0},
-                {-sin(theta), 0,       cos(theta)}};
+                {-sin(yaw), 0,       cos(yaw)}};
+
+        double[] w = new double[3];
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                w[row] += a[row][col] * v[col];
+            }
+        }
+
+        return w;
+    }
+
+    private static double[] rotateAroundZ(double[] v, double roll) {
+        double[][] a = new double[][]{
+
+                {cos(roll), -sin(roll), 0},
+                {sin(roll), cos(roll),  0},
+                {0,       0,              1}};
 
         double[] w = new double[3];
         for (int row = 0; row < 3; row++) {
