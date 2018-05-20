@@ -44,6 +44,9 @@ public class MapView extends JPanel {
     private int depth;
     private Graphics g;
     private Graphics2D g2;
+    private JLabel gameOver;
+    private static final String GAME_OVER_TEXT = "Game Over";
+
 
     /**
      * Create a new MapView component.
@@ -390,6 +393,17 @@ public class MapView extends JPanel {
         if (health < 20) healthCounter.setForeground(Color.RED);
         healthCounter.setText("Health: " + (int)round(health));
         healthCounter.setSize(healthCounter.getPreferredSize());
+    }
+
+    public void displayGameOver() {
+        gameOver = new JLabel(GAME_OVER_TEXT, SwingConstants.CENTER);
+        gameOver.setFont(new Font("Dialog", Font.ITALIC + Font.BOLD, 100));
+        gameOver.setForeground(new Color(255, 69, 70));
+        gameOver.setBackground(BG_COLOR);
+        gameOver.setSize(gameOver.getPreferredSize());
+        gameOver.setLocation(size.width / 2 - gameOver.getSize().width / 2,
+                size.height / 2 - gameOver.getSize().height / 2);
+        add(gameOver);
     }
 
     public int getDepth() {

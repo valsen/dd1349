@@ -150,7 +150,7 @@ public class Game {
                                 gui.getMap().updateHealth(health);
                                 gui.getMap().updateView();
                                 if (round(health) <= 0) {
-                                    gui.displayGameOver();
+                                    gui.getMap().displayGameOver();
                                     timer.stop();
                                 }
                                 enemy.startCoolDownTimer();
