@@ -45,7 +45,7 @@ public class Game {
     private boolean shaking = false;
     private boolean shrinking = false;
     private boolean expanding = false;
-    private static final double DIFFICULTY_INCREASE = 0.005;
+    private static final double DIFFICULTY_INCREASE = 0.003;
     private static final double SPEED_INCREASE  = 0.0002;
 
     public Game() {
@@ -71,7 +71,6 @@ public class Game {
         gui.getMap().updateView();
 
         // count-down to start
-        /*
         countDownTimer = new Timer(1000, new ActionListener() {
             int countDown = 5;
             @Override
@@ -90,8 +89,7 @@ public class Game {
         });
         countDownTimer.setInitialDelay(0);
         countDownTimer.start();
-        */
-        playing = true;
+
         timer = new Timer(1000 / fps, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -180,7 +178,7 @@ public class Game {
                     }
                     if (difficulty > 30) {
                         expanding = false;
-                        //spinningRandom = true;
+                        spinning = true;
                     }
                     if (difficulty > 35) {
                         //spinningRandom = false;
