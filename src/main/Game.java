@@ -33,7 +33,7 @@ public class Game {
     private static final int fps = 60;
     public static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
     // private static final double WIDTH_TO_HEIGHT_FACTOR = 1;//1536.0 / 2048.0;
-    private static final double HEIGHT_TO_WIDTH_FACTOR = 1;
+    private static final double HEIGHT_TO_WIDTH_FACTOR = (double) 2048 / 1536;
     // public static final int HEIGHT = (int) Math.round(WIDTH * WIDTH_TO_HEIGHT_FACTOR);
     public static final int WIDTH = (int) Math.round(HEIGHT*HEIGHT_TO_WIDTH_FACTOR);
     public static final int DEPTH = HEIGHT;
@@ -45,7 +45,7 @@ public class Game {
     private boolean shaking = false;
     private boolean shrinking = false;
     private boolean expanding = false;
-    private static final double DIFFICULTY_INCREASE = 0.003;
+    private static final double DIFFICULTY_INCREASE = 0.013;
     private static final double SPEED_INCREASE  = 0.0002;
 
     public Game() {

@@ -36,8 +36,8 @@ public abstract class StationGraph {
             while (scanner.hasNext()) {
                 String[] stationInfo = scanner.nextLine().split("/");
                 Location stationLocation = new Location((int) round(Double.valueOf(stationInfo[2]) * Game.HEIGHT),
-                        (int) round(Double.valueOf(stationInfo[1]) * Game.WIDTH));
-                int z = (int) round(Double.valueOf(stationInfo[3]) * Game.DEPTH);
+                        (int) round(Double.valueOf(stationInfo[1]) * Game.HEIGHT)); //instead of width. constrains 1:1 ratio of map regardless window size.
+                int z = (int) round(Double.valueOf(stationInfo[3]) * Game.HEIGHT); //instead of depth. constrains 1:1 ratio of map regardless window size.
                 stations.add(new Station(stationLocation.getX(), stationLocation.getY(), z, stationInfo[0], Integer.valueOf(stationInfo[4])));
             }
         } catch(FileNotFoundException e) {

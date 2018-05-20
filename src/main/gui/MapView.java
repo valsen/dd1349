@@ -57,7 +57,7 @@ public class MapView extends JPanel {
         this.game = game;
         currentGraph = game.getCurrentGraph();
         setLayout(null); //required for custom placement of labels.
-        setBackground(BG_COLOR);
+        setBackground(Color.WHITE);
         xScale = yScale = GRID_VIEW_SCALING_FACTOR;
         gridHeight = height;
         gridWidth = width;
@@ -394,7 +394,7 @@ public class MapView extends JPanel {
      */
     public void eraseMap() {
         g.setColor(BG_COLOR);
-        g.fillRect(0,0, getWidth(), getHeight());
+        g.fillRect(0,0, gridWidth, gridHeight);
         eraseLabels(stationLabels);
     }
 

@@ -19,15 +19,23 @@ public class GUI extends JFrame {
     public GUI(Game game, int width, int height, int depth)
     {
         setTitle("Dysfunctional train game");
-        //setLocation(50, 50);
         setBackground(BG_COLOR);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(600, 600));
+        Dimension windowSize = new Dimension(width, height);
+        setMinimumSize(windowSize);
+        setMaximumSize(windowSize);
+        setPreferredSize(windowSize);
 
-        map = new MapView(this, game, height, width, depth);
+        map = new MapView(this, game, height, height, height);
 
-        Container contents = getContentPane();
-        contents.add(map, BorderLayout.CENTER);
+        Box box = new Box(BoxLayout.Y_AXIS);
+        box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        box.add(Box.createVerticalGlue());
+        box.add(map);
+        box.add(Box.createVerticalGlue());
+        add(box);
+        //Container contents = getContentPane();
+        //add(map, BorderLayout.CENTER);
 
         pack();
         setLocationRelativeTo(null);
