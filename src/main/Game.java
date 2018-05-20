@@ -67,7 +67,6 @@ public class Game {
 
     public void run() {
         difficulty = 0;
-        gui.getMap().buildMap();
         gui.getMap().updateView();
 
         // count-down to start

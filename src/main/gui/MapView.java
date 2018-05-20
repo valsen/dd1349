@@ -33,11 +33,8 @@ public class MapView extends JPanel {
     private JLabel objective;
     private JLabel commandLabel;
     private JLabel bigCountDown;
-    private JLabel gameOver;
     private Game game;
     private StationGraph currentGraph;
-    private BufferedImage bgImage;
-    private Image fieldImage;
     private Image playerIcon;
     private Image scaledPlayerIcon;
     private Map<Station, StationLabel> stationLabels = new HashMap<>();
@@ -57,7 +54,10 @@ public class MapView extends JPanel {
         this.game = game;
         currentGraph = game.getCurrentGraph();
         setLayout(null); //required for custom placement of labels.
-        setBackground(Color.WHITE);
+        setBackground(BG_COLOR);
+        setMinimumSize(new Dimension(width, height));
+        setMaximumSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(width, height));
         xScale = yScale = GRID_VIEW_SCALING_FACTOR;
         gridHeight = height;
         gridWidth = width;
@@ -106,32 +106,11 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Build the map.
-     */
-    public void buildMap()
-    {
-        if(!isVisible()) {
-            setVisible(true);
-        }
-        //createLabels();
-        preparePaint();
-    }
-
-    /**
      * Update the view of the gamestate.
      */
     public void updateView()
     {
-        if (!getSize().equals(size)) {
-            preparePaint();
-        }
-        eraseMap();
-        drawLinesBetweenAllStations();
-        highlightActiveRoute();
-        drawStations();
-        //drawStationLabels();
-        drawEnemies();
-        drawPlayer();
+        revalidate();
         repaint();
     }
 
@@ -144,50 +123,6 @@ public class MapView extends JPanel {
         for (Station station : game.getCurrentGraph().getStations()) {
             stationLabels.put(station, new StationLabel(station.getName(), station.getOrientationDegrees()));
         }
-    }
-
-    /**
-     * Prepare for a new round of painting. Since the components
-     * may be resized, compute the scaling factor again. Create
-     * a buffered image of the map to use as background for next
-     * update of view.
-     */
-    private void preparePaint()
-    {
-            size = getSize();
-            fieldImage = createImage(size.width, size.height);
-
-            g = fieldImage.getGraphics();
-            g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setStroke(new BasicStroke(6));
-
-            xScale = (double) size.width / gridWidth;
-            yScale = (double) size.height / gridHeight;
-            xScale = yScale = min(xScale, yScale);
-
-            drawLinesBetweenAllStations();
-            drawNewBackground();
-            highlightActiveRoute();
-            drawStations();
-            //drawStationLabels();
-    }
-
-    /**
-     * Create buffered image of the whole map except for the player and enemies.
-     */
-    private void drawNewBackground() {
-        bgImage = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics graphics = bgImage.getGraphics();
-        paintComponent(graphics);
-    }
-
-    /**
-     * Paint image of map as background.
-     */
-    private void drawBackground() {
-        g.drawImage(bgImage, 0, 0, null);
     }
 
     /**
@@ -339,10 +274,9 @@ public class MapView extends JPanel {
     private void drawCenteredPlayer(int x, int y) {
         x = (int) (x * xScale - (PLAYER_SIZE) / 2 + xScale / 2);
         y = (int) (y * yScale - (PLAYER_SIZE / 2) + yScale / 2);
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.rotate(game.getAngle(game.getPlayer()), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
-        g2d.drawImage(scaledPlayerIcon, x, y, null);
-        g2d.rotate(-(game.getAngle(game.getPlayer())), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
+        g2.rotate(game.getAngle(game.getPlayer()), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
+        g2.drawImage(scaledPlayerIcon, x, y, null);
+        g2.rotate(-(game.getAngle(game.getPlayer())), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
     }
 
     /**
@@ -365,10 +299,9 @@ public class MapView extends JPanel {
                                                               //(int)round(enemy.getIcon().getHeight(null)/1.5), 0);
         x = (int) (x * xScale - enemyIcon.getWidth(null) / 2 + xScale/2);
         y = (int) (y * yScale - enemyIcon.getHeight(null) / 2 + yScale/2);
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.rotate(game.getAngle(enemy), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
-        g2d.drawImage(enemyIcon, x, y, null);
-        g2d.rotate(-(game.getAngle(enemy)), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
+        g2.rotate(game.getAngle(enemy), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
+        g2.drawImage(enemyIcon, x, y, null);
+        g2.rotate(-(game.getAngle(enemy)), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
     }
 
     /**
@@ -377,42 +310,21 @@ public class MapView extends JPanel {
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(fieldImage != null) {
-            Dimension currentSize = getSize();
-            if(size.equals(currentSize)) {
-                g.drawImage(fieldImage, 0, 0, null);
-            }
-            else {
-                // Rescale the previous image.
-                g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);
-            }
-        }
-    }
 
-    /**
-     * Erase the whole map and fill with background color.
-     */
-    public void eraseMap() {
-        g.setColor(BG_COLOR);
-        g.fillRect(0,0, gridWidth, gridHeight);
-        eraseLabels(stationLabels);
-    }
+        g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setStroke(new BasicStroke(6));
 
-    /**
-     * Erase station labels from map.
-     * @param map
-     */
-    private void eraseLabels(Map<Station, StationLabel> map) {
-        for (JLabel label : map.values()) {
-            try {
-                Container parent = label.getParent();
-                parent.remove(label);
-                parent.validate();
-                parent.repaint();
-            } catch (NullPointerException npe){
-                // npe is fine, means label was a duplicate and never added.
-            }
-        }
+        xScale = (double) size.width / gridWidth;
+        yScale = (double) size.height / gridHeight;
+        xScale = yScale = min(xScale, yScale);
+
+        drawLinesBetweenAllStations();
+        highlightActiveRoute();
+        drawStations();
+        drawEnemies();
+        drawPlayer();
     }
 
     public void displayObjective() {
@@ -478,10 +390,6 @@ public class MapView extends JPanel {
         if (health < 20) healthCounter.setForeground(Color.RED);
         healthCounter.setText("Health: " + (int)round(health));
         healthCounter.setSize(healthCounter.getPreferredSize());
-    }
-
-    public void removeGameOver() {
-        remove(gameOver);
     }
 
     public int getDepth() {
