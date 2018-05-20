@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -46,6 +47,8 @@ public class MapView extends JPanel {
     private Graphics2D g2;
     private JLabel gameOver;
     private static final String GAME_OVER_TEXT = "Game Over";
+    private double[] cameraPos = {500, 500, 0};
+    private static final double CAMERA_DIST = 700;
 
 
     /**
@@ -133,7 +136,7 @@ public class MapView extends JPanel {
      */
     private void drawStations() {
         for (Station station : game.getCurrentGraph().getStations()) {
-            drawCenteredStation(station.getRoundedX(), station.getRoundedY());
+            drawCenteredStation((int) round(getDisplayPos(station)[0]), (int) round(getDisplayPos(station)[1]));
         }
     }
 
@@ -155,12 +158,12 @@ public class MapView extends JPanel {
         int x1, x2, y1, y2;
         for (int i = 0; i < game.getCurrentGraph().getStations().size() - 1; i++) {
             Station from = currentGraph.getStations().get(i);
-            x1 = (int) (from.getX() * xScale + (xScale / 2));
-            y1 = (int) (from.getY() * yScale + (yScale / 2));
+            x1 = (int) (getDisplayPos(from)[0] * xScale + (xScale / 2));
+            y1 = (int) (getDisplayPos(from)[1] * yScale + (yScale / 2));
 
             for(Station to : game.getCurrentGraph().getAvailableStations(from, null)) {
-                x2 = (int) (to.getX() * xScale + (xScale / 2));
-                y2 = (int) (to.getY() * yScale + (yScale / 2));
+                x2 = (int) (getDisplayPos(to)[0] * xScale + (xScale / 2));
+                y2 = (int) (getDisplayPos(to)[1] * yScale + (yScale / 2));
                 g2.setColor(INACTIVE_RAIL_COLOR);
                 g2.drawLine(x1, y1, x2, y2);
             }
@@ -175,12 +178,12 @@ public class MapView extends JPanel {
         Player player = game.getPlayer();
         Station next = player.getNextStation();
         Station nextNext = player.getNextNextStation();
-        int playerXPos = (int) (player.getX() * xScale + (xScale / 2));
-        int playerYPos = (int) (player.getY() * yScale + (yScale / 2));
-        int nextXPos = (int) (next.getX() * xScale + (xScale / 2));
-        int nextYPos = (int) (next.getY() * yScale + (yScale / 2));
-        int nextNextXPos = (int) (nextNext.getX() * xScale + (xScale / 2));
-        int nextNextYPos = (int) (nextNext.getY() * yScale + (yScale / 2));
+        int playerXPos = (int) round((getDisplayPos(player)[0] * xScale + (xScale / 2)));
+        int playerYPos = (int) round((getDisplayPos(player)[1] * yScale + (yScale / 2)));
+        int nextXPos = (int) round((getDisplayPos(next)[0] * xScale + (xScale / 2)));
+        int nextYPos = (int) round((getDisplayPos(next)[1] * yScale + (yScale / 2)));
+        int nextNextXPos = (int) round((getDisplayPos(nextNext)[0] * xScale + (xScale / 2)));
+        int nextNextYPos = (int) round((getDisplayPos(nextNext)[1] * yScale + (yScale / 2)));
         g2.setColor(ACTIVE_RAIL_COLOR);
         g2.drawLine(playerXPos, playerYPos, nextXPos, nextYPos);
         g2.drawLine(nextXPos, nextYPos, nextNextXPos, nextNextYPos);
@@ -266,7 +269,8 @@ public class MapView extends JPanel {
      * Draw the player.
      */
     private void drawPlayer() {
-        drawCenteredPlayer(game.getPlayer().getRoundedX(), game.getPlayer().getRoundedY());
+        drawCenteredPlayer((int) round(getDisplayPos(game.getPlayer())[0]),
+                (int) round(getDisplayPos(game.getPlayer())[1]));
     }
 
     /**
@@ -287,7 +291,7 @@ public class MapView extends JPanel {
      */
     private void drawEnemies() {
         for (Enemy enemy : game.getEnemies()) {
-            drawCenteredEnemy(enemy, enemy.getRoundedX(), enemy.getRoundedY());
+            drawCenteredEnemy(enemy, (int) round(getDisplayPos(enemy)[0]), (int) round(getDisplayPos(enemy)[1]));
         }
     }
 
@@ -408,5 +412,19 @@ public class MapView extends JPanel {
 
     public int getDepth() {
         return depth;
+    }
+
+    private double[] getDisplayPos(FieldObject displayObject) {
+        System.out.println(displayObject.getCoordinateVector()[0] + " " + displayObject.getCoordinateVector()[1]
+        + " " + displayObject.getCoordinateVector()[2] );
+        double x = displayObject.getX();
+        double y = displayObject.getY();
+        double z = displayObject.getZ();
+        double cameraX = cameraPos[0];
+        double cameraY = cameraPos[1];
+        double displayX = ((x - cameraX)*(CAMERA_DIST/z) + cameraX);
+        double displayY = ((y - cameraY)*(CAMERA_DIST/z) + cameraY);
+        System.out.println(displayX + " " + displayY );
+        return new double[]{displayX, displayY};
     }
 }

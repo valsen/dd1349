@@ -138,4 +138,8 @@ public abstract class FieldObject {
     public int getCollisionRadius() {
         return Math.min(icon.getWidth(null), icon.getHeight(null));
     }
+
+    public double[] getCoordinateVector() {
+        return new double[]{xPos, yPos, zPos};
+    }
 }
