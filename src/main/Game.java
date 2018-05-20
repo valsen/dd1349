@@ -45,7 +45,10 @@ public class Game {
     private boolean shaking = false;
     private boolean shrinking = false;
     private boolean expanding = false;
-    private static final double DIFFICULTY_INCREASE = 0.013;
+    private double pitch;
+    private double yaw;
+    private double roll;
+    private static final double DIFFICULTY_INCREASE = 0.003;
     private static final double SPEED_INCREASE  = 0.0002;
 
     public Game() {
@@ -160,6 +163,9 @@ public class Game {
                     player.increaseVelocity(SPEED_INCREASE);
                     if(difficulty > 5) {
                         spinning = true;
+                        yaw = -0.003;
+                        pitch = 0.003;
+                        roll = 0.003;
                     }
                     if(difficulty > 10) {
                         spinning = false;
@@ -168,6 +174,9 @@ public class Game {
                     if(difficulty > 15) {
                         shrinking = false;
                         spinning = true;
+                        yaw = 0.005;
+                        pitch = 0.005;
+                        roll = 0.005;
                     }
                     if (difficulty > 20) {
                         expanding = true;
@@ -178,8 +187,14 @@ public class Game {
                     if (difficulty > 30) {
                         expanding = false;
                         spinning = true;
+                        yaw = 0.007;
+                        pitch = 0.007;
+                        roll = 0.007;
                     }
                     if (difficulty > 35) {
+                        yaw = -0.01;
+                        pitch = -0.01;
+                        roll = -0.01;
                         //spinningRandom = false;
                     }
                     if (difficulty > 40) {
@@ -251,7 +266,7 @@ public class Game {
         double dy = station.getY() - yMid;
         double dz = station.getZ() - zMid;
         double[] v = new double[]{dx, dy, dz};
-        double[] w = Transformations.rotate(v, -0.003, 0.003, 0.003);
+        double[] w = Transformations.rotate(v, yaw, pitch, roll);
         station.moveTo(w[0] + xMid, w[1] + yMid, w[2] + zMid);
     }
 
