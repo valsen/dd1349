@@ -30,6 +30,7 @@ public class Game {
     private double health = 100;
     private boolean playing = false;
     private ArrayList<Enemy> enemies = new ArrayList<>();
+    private double enemyVelocity = 1;
     private static final int fps = 60;
     public static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
     // private static final double WIDTH_TO_HEIGHT_FACTOR = 1;//1536.0 / 2048.0;
@@ -49,7 +50,8 @@ public class Game {
     private double yaw;
     private double roll;
     private static final double DIFFICULTY_INCREASE = 0.003;
-    private static final double SPEED_INCREASE  = 0.0002;
+    private static final double PLAYER_SPEED_INCREASE = 0.0002;
+    private static final double ENEMY_SPEED_INCREASE  = 0.00015;
 
     public Game() {
         graphs.add(new TestGraph());
@@ -127,7 +129,7 @@ public class Game {
                     player.updateDistanceQuotient();
                     Iterator it = enemies.iterator();
                     while (it.hasNext()) {
-                        // The enemies list obiviously contains only enemies
+                        // The enemies list obviously contains only enemies
                         Enemy enemy = (Enemy) it.next();
                         adjustLocation(enemy);
                         moveTowards(enemy, enemy.getNextStation(), enemy.getVelocity());
@@ -135,7 +137,7 @@ public class Game {
                         if (collisionFromBehind(player, enemy)) {
                             it.remove();
                             // increment score by 10;
-                            score += 10;
+                            score += 10 + (1 * difficulty);
                             gui.getMap().updateScore(score);
                             gui.getMap().updateView();
                         }
@@ -157,10 +159,12 @@ public class Game {
                                 gui.getMap().updateView();
                             }
                         }
+                        enemy.increaseVelocity(ENEMY_SPEED_INCREASE);
+                        enemyVelocity = enemy.getVelocity();
                     }
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
-                    player.increaseVelocity(SPEED_INCREASE);
+                    player.increaseVelocity(PLAYER_SPEED_INCREASE);
                     if(difficulty > 5) {
                         spinning = true;
                         yaw = -0.003;
@@ -337,7 +341,7 @@ public class Game {
                 if (fromStation != null && toStation != null) {
                     double[] enemyCoords = getPosition(fromStation, toStation, ratio);
                     Enemy enemy = new Enemy((int)round(enemyCoords[0]), (int)round(enemyCoords[1]), (int)round(enemyCoords[2]), enemyName,
-                            "src/Sprites/enemyIcons/" + imageFileName);
+                            "src/Sprites/enemyIcons/" + imageFileName, enemyVelocity);
                     enemyNames.add(enemyName);
                     enemyStrings.put(enemyName, "src/Sprites/enemyIcons/" + imageFileName);
                     enemy.setPreviousStation(fromStation);
@@ -447,7 +451,7 @@ public class Game {
         String enemyName = enemyNames.get(rng.nextInt(enemyNames.size()));
         double[] enemyCoords = getPosition(fromStation, toStation, rng.nextDouble()*0.6 + 0.2);
         Enemy enemy = new Enemy((int)round(enemyCoords[0]), (int)round(enemyCoords[1]), (int)round(enemyCoords[2]),
-                enemyName, enemyStrings.get(enemyName));
+                enemyName, enemyStrings.get(enemyName), enemyVelocity);
         enemy.setPreviousStation(fromStation);
         enemy.setNextStation(toStation);
         ArrayList<Station> nextNextOptions = currentGraph.getAvailableStations(toStation, fromStation);

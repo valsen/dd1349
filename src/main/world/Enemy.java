@@ -13,10 +13,10 @@ public class Enemy extends FieldObject {
     private Timer timer;
     private boolean collidable = true;
 
-    public Enemy(int x, int y, int z, String name, String filepath) {
+    public Enemy(int x, int y, int z, String name, String filepath, double velocity) {
         super(x, y, z, new File(filepath));
         this.name = name;
-        setVelocity(1 + new Random().nextDouble() * 0.5);
+        setVelocity(velocity);
     }
 
     public String getName() {
