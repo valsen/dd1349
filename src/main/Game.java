@@ -2,6 +2,7 @@ package main;
 
 import main.gui.GUI;
 import main.world.*;
+import main.world.graphs.CubeGraph;
 import main.world.graphs.TestGraph;
 
 import javax.swing.Timer;
@@ -54,8 +55,9 @@ public class Game {
     private static final double ENEMY_SPEED_INCREASE  = 0.00015;
 
     public Game() {
-        graphs.add(new TestGraph());
+        //graphs.add(new TestGraph());
         //graphs.add(new StarGraph());
+        graphs.add(new CubeGraph());
         currentGraph = graphs.get(0);
         gui = new GUI(this, WIDTH, HEIGHT, DEPTH);
         createEnemies(currentGraph);
