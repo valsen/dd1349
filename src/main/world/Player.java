@@ -8,31 +8,32 @@ import java.util.*;
 import java.io.File;
 import java.util.List;
 
-public class Train extends FieldObject {
+public class Player extends FieldObject {
 
     private boolean atStation = false;
     private int stationCounter = 0;
     private Random rng;
     private String name;
     private Image trainIcon;
-    private static final File icon = new File("src/Sprites/grön.png");
+    private static final File icon = new File("src/Sprites/spaceship.png");
 
 
     /**
      * Creates a train at the specified location.
      */
-    public Train(int x, int y) {
-        super(x, y, icon);
+    public Player(int x, int y, int z) {
+        super(x, y, z, icon);
     }
 
     public void toggleRoute(ArrayList<Station> list) {
         if (list.size() > 1) {
-            Station nextNext = list.get(new Random().nextInt(list.size()));
-            if (!nextNext.equals(getNextNextStation())) {
-                setNextNextStation(nextNext);
+            //Station nextNext = list.get(new Random().nextInt(list.size()));
+            int currentIndex = list.indexOf(getNextNextStation());
+            if (currentIndex < list.size() - 1) {
+                setNextNextStation(list.get(currentIndex + 1));
             }
             else {
-                toggleRoute(list);
+                setNextNextStation(list.get(0));
             }
         }
     }

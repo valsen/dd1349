@@ -1,3 +1,0 @@
-Charlie Chaplin/StationA/StationB/chaplin.png
-A blind man/StationB/StationC/blindman.png
-Einstein/StationC/StationE/einstein.png

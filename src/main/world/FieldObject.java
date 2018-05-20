@@ -10,8 +10,8 @@ import static java.lang.Math.round;
 
 public abstract class FieldObject {
 
-    private double xPos, yPos;
-    private double velocity = 1;
+    private double xPos, yPos, zPos;
+    private double velocity = 2;
     private Station previousStation;
     private Station nextStation;
     private Station nextNextStation;
@@ -20,12 +20,13 @@ public abstract class FieldObject {
     private Image icon;
     private static final int MAX_SIZE = 60;
 
-    public FieldObject(int x, int y, File iconFile) {
+    public FieldObject(int x, int y, int z, File iconFile) {
         this.xPos = x;
         this.yPos = y;
+        this.zPos = z;
         this.iconFile = iconFile;
         setIcon(iconFile);
-        System.out.println(getCollisionRadius());
+        //System.out.println(getCollisionRadius());
     }
 
     /**
@@ -42,6 +43,8 @@ public abstract class FieldObject {
         return xPos;
     }
 
+    public double getZ() { return zPos; }
+
     public void setVelocity(double velocity) {
         this.velocity = velocity;
     }
@@ -50,9 +53,10 @@ public abstract class FieldObject {
         return velocity;
     }
 
-    public void moveTo(double x, double y) {
+    public void moveTo(double x, double y, double z) {
         xPos = x;
         yPos = y;
+        zPos = z;
     }
 
     public int getRoundedX() {
@@ -61,6 +65,10 @@ public abstract class FieldObject {
 
     public int getRoundedY() {
         return (int) Math.round(yPos);
+    }
+
+    public int getRoundedZ() {
+        return (int) Math.round(zPos);
     }
 
     public Station getPreviousStation() {
@@ -114,8 +122,9 @@ public abstract class FieldObject {
 
     public static double getDistance(FieldObject a, FieldObject b) {
         double dx = a.getX()-b.getX();
-        double dy = b.getY()-b.getY();
-        return Math.sqrt(dx*dx + dy*dy);
+        double dy = a.getY()-b.getY();
+        double dz = a.getZ()-b.getZ();
+        return Math.sqrt(dx*dx + dy*dy + dz*dz);
     }
 
     public double getDistanceQuotient() {

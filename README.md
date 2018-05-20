@@ -1,10 +1,10 @@
-# dd1349 - The train game
+# dd1349 - The player game
 **students:** @vals @grundb
 
 **programming language:** Java
 
 ## Project Description
-The train game is a simple reaction-based game that draws heavy inspiration from the [trolley problem.](https://en.wikipedia.org/wiki/Trolley_problem) The player is forced to make split-second decisions with potentially lethal outcome for people having been tied to the tracks with a train approaching very quickly. The game is implemented in **java** using the **swing** graphics library from the standard java library. 
+The player game is a simple reaction-based game that draws heavy inspiration from the [trolley problem.](https://en.wikipedia.org/wiki/Trolley_problem) The player is forced to make split-second decisions with potentially lethal outcome for people having been tied to the tracks with a player approaching very quickly. The game is implemented in **java** using the **swing** graphics library from the standard java library. 
 
 The project makes use of a n interactive subway map and simulator created mainly by the same students as part of a different course. The files from the master branch of [that repository](https://github.com/grundb/MDI-C4) were simply copied over  this one at 2018-04-06. The intent of this project is to modify said repository into a game. The game will make use of many classes, some of which were part of the initial subway map. 
 

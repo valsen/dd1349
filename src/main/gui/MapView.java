@@ -21,65 +21,79 @@ public class MapView extends JPanel {
     
     private static final Color INACTIVE_RAIL_COLOR = new Color(160, 160, 160);
     private static final Color ACTIVE_RAIL_COLOR = new Color(255, 101, 162);
-    private static final int TRAIN_SIZE = 50;
+    private static final int PLAYER_SIZE = 50;
     private static final int STATION_SIZE = 15;
-    private static final int VICTIM_SIZE = 60;
-    private static final String OBJECTIVE_TEXT = "Avoid running over the pedestrians!";
-    private static final String GAME_COMMAND = "Use spacebar to control the train's route";
+    private static final int ENEMY_SIZE = 50;
+    private static final String OBJECTIVE_TEXT = "Hit enemies from behind to collect points. Avoid frontal collisions!";
+    private static final String GAME_COMMAND = "Use spacebar to control your spaceship's route";
     private final double GRID_VIEW_SCALING_FACTOR = 1;
     private GUI gui;
     private JLabel scoreCounter;
+    private JLabel healthCounter;
     private JLabel objective;
     private JLabel commandLabel;
     private JLabel bigCountDown;
-    private JLabel gameOver;
     private Game game;
     private StationGraph currentGraph;
-    private BufferedImage bgImage;
-    private Image fieldImage;
-    private Image trainIcon;
-    private Image scaledTrainIcon;
+    private Image playerIcon;
+    private Image scaledPlayerIcon;
     private Map<Station, StationLabel> stationLabels = new HashMap<>();
     private int gridWidth, gridHeight;
     private double xScale, yScale;
     private Dimension size;
+    private int depth;
     private Graphics g;
     private Graphics2D g2;
 
     /**
      * Create a new MapView component.
      */
-    MapView(GUI gui, Game game, int height, int width)
+    MapView(GUI gui, Game game, int height, int width, int depth)
     {
         this.gui = gui;
         this.game = game;
         currentGraph = game.getCurrentGraph();
         setLayout(null); //required for custom placement of labels.
         setBackground(BG_COLOR);
+        setMinimumSize(new Dimension(width, height));
+        setMaximumSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(width, height));
         xScale = yScale = GRID_VIEW_SCALING_FACTOR;
         gridHeight = height;
         gridWidth = width;
         size = new Dimension(width, height);
+        this.depth = depth;
         try {
-            trainIcon = ImageIO.read(new File("src/Sprites/grön.png"));
+            playerIcon = ImageIO.read(new File("src/Sprites/mainship.png"));
         }
         catch (IOException e) {
             System.out.println("Failed to load all icons.");
         }
-        scaledTrainIcon = trainIcon.getScaledInstance(TRAIN_SIZE, TRAIN_SIZE, 0);
+        scaledPlayerIcon = playerIcon.getScaledInstance(PLAYER_SIZE, PLAYER_SIZE, 0);
         createScoreCounter();
+        createHealthCounter();
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false), "toggle route");
         getActionMap().put("toggle route", new ToggleRouteAction());
     }
 
     private void createScoreCounter() {
         scoreCounter = new JLabel();
-        scoreCounter.setFont(getFont().deriveFont(16.0f));
+        scoreCounter.setFont(getFont().deriveFont(26.0f));
         scoreCounter.setText("Score: 0");
-        scoreCounter.setLocation(10, 10);
+        scoreCounter.setLocation(20, 15);
         scoreCounter.setSize(scoreCounter.getPreferredSize());
         scoreCounter.setForeground(Color.WHITE);
         add(scoreCounter);
+    }
+
+    private void createHealthCounter() {
+        healthCounter = new JLabel();
+        healthCounter.setFont(getFont().deriveFont(26.0f));
+        healthCounter.setText("Health: 100");
+        healthCounter.setLocation(20, 45);
+        healthCounter.setSize(healthCounter.getPreferredSize());
+        healthCounter.setForeground(Color.GREEN);
+        add(healthCounter);
     }
 
     /**
@@ -92,32 +106,11 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Build the map.
-     */
-    public void buildMap()
-    {
-        if(!isVisible()) {
-            setVisible(true);
-        }
-        //createLabels();
-        preparePaint();
-    }
-
-    /**
-     * Update the view of the map and trains.
+     * Update the view of the gamestate.
      */
     public void updateView()
     {
-        if (!getSize().equals(size)) {
-            preparePaint();
-        }
-        eraseMap();
-        drawLinesBetweenAllStations();
-        highlightActiveRoute();
-        drawStations();
-        //drawStationLabels();
-        drawVictims();
-        drawTrain();
+        revalidate();
         repaint();
     }
 
@@ -130,50 +123,6 @@ public class MapView extends JPanel {
         for (Station station : game.getCurrentGraph().getStations()) {
             stationLabels.put(station, new StationLabel(station.getName(), station.getOrientationDegrees()));
         }
-    }
-
-    /**
-     * Prepare for a new round of painting. Since the components
-     * may be resized, compute the scaling factor again. Create
-     * a buffered image of the map to use as background for next
-     * update of view.
-     */
-    private void preparePaint()
-    {
-            size = getSize();
-            fieldImage = createImage(size.width, size.height);
-
-            g = fieldImage.getGraphics();
-            g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setStroke(new BasicStroke(6));
-
-            xScale = (double) size.width / gridWidth;
-            yScale = (double) size.height / gridHeight;
-            xScale = yScale = min(xScale, yScale);
-
-            drawLinesBetweenAllStations();
-            drawNewBackground();
-            highlightActiveRoute();
-            drawStations();
-            //drawStationLabels();
-    }
-
-    /**
-     * Create buffered image of the whole map except for the trains.
-     */
-    private void drawNewBackground() {
-        bgImage = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics graphics = bgImage.getGraphics();
-        paintComponent(graphics);
-    }
-
-    /**
-     * Paint image of map as background.
-     */
-    private void drawBackground() {
-        g.drawImage(bgImage, 0, 0, null);
     }
 
     /**
@@ -216,21 +165,21 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Highlight the rail from the train's current position
+     * Highlight the path from the player's current position
      * to the next-next station.
      */
     private void highlightActiveRoute() {
-        Train train = game.getMainTrain();
-        Station next = train.getNextStation();
-        Station nextNext = train.getNextNextStation();
-        int trainXPos = (int) (train.getX() * xScale + (xScale / 2));
-        int trainYPos = (int) (train.getY() * yScale + (yScale / 2));
+        Player player = game.getPlayer();
+        Station next = player.getNextStation();
+        Station nextNext = player.getNextNextStation();
+        int playerXPos = (int) (player.getX() * xScale + (xScale / 2));
+        int playerYPos = (int) (player.getY() * yScale + (yScale / 2));
         int nextXPos = (int) (next.getX() * xScale + (xScale / 2));
         int nextYPos = (int) (next.getY() * yScale + (yScale / 2));
         int nextNextXPos = (int) (nextNext.getX() * xScale + (xScale / 2));
         int nextNextYPos = (int) (nextNext.getY() * yScale + (yScale / 2));
         g2.setColor(ACTIVE_RAIL_COLOR);
-        g2.drawLine(trainXPos, trainYPos, nextXPos, nextYPos);
+        g2.drawLine(playerXPos, playerYPos, nextXPos, nextYPos);
         g2.drawLine(nextXPos, nextYPos, nextNextXPos, nextNextYPos);
     }
 
@@ -311,44 +260,48 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Draw the trains.
+     * Draw the player.
      */
-    private void drawTrain() {
-        drawCenteredTrain(game.getMainTrain().getRoundedX(), game.getMainTrain().getRoundedY());
+    private void drawPlayer() {
+        drawCenteredPlayer(game.getPlayer().getRoundedX(), game.getPlayer().getRoundedY());
     }
 
     /**
-     * Draw a train centered at the specified row and column.
-     * @param x The column of the train.
-     * @param y The row of the train.
+     * Draw the player centered at the specified row and column.
+     * @param x The column of the player.
+     * @param y The row of the player.
      */
-    private void drawCenteredTrain(int x, int y) {
-        x = (int) (x * xScale - (TRAIN_SIZE) / 2 + xScale / 2);
-        y = (int) (y * yScale - (TRAIN_SIZE / 2) + yScale / 2);
-
-        g.drawImage(scaledTrainIcon, x, y, null);
+    private void drawCenteredPlayer(int x, int y) {
+        x = (int) (x * xScale - (PLAYER_SIZE) / 2 + xScale / 2);
+        y = (int) (y * yScale - (PLAYER_SIZE / 2) + yScale / 2);
+        g2.rotate(game.getAngle(game.getPlayer()), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
+        g2.drawImage(scaledPlayerIcon, x, y, null);
+        g2.rotate(-(game.getAngle(game.getPlayer())), x + PLAYER_SIZE /2, y + PLAYER_SIZE /2);
     }
 
     /**
-     * Draw the victims.
+     * Draw the enemies.
      */
-    private void drawVictims() {
-        for (Victim victim : game.getVictims()) {
-            drawCenteredVictim(victim, victim.getRoundedX(), victim.getRoundedY());
+    private void drawEnemies() {
+        for (Enemy enemy : game.getEnemies()) {
+            drawCenteredEnemy(enemy, enemy.getRoundedX(), enemy.getRoundedY());
         }
     }
 
     /**
-     * Draw a victim centered at the specified row and column.
-     * @param victim the victim to be drawn.
-     * @param x the column of the victim.
-     * @param y the row of the victim.
+     * Draw a enemy centered at the specified row and column.
+     * @param enemy the enemy to be drawn.
+     * @param x the column of the enemy.
+     * @param y the row of the enemy.
      */
-    private void drawCenteredVictim(Victim victim, int x, int y) {
-        Image victimIcon = victim.getIcon();
-        x = (int) (x * xScale - victimIcon.getWidth(null) / 2 + xScale/2);
-        y = (int) (y * yScale - victimIcon.getHeight(null) / 2 + yScale/2);
-        g.drawImage(victimIcon, x, y, null);
+    private void drawCenteredEnemy(Enemy enemy, int x, int y) {
+        Image enemyIcon = enemy.getIcon();//.getScaledInstance((int)round(enemy.getIcon().getWidth(null)/1.5),
+                                                              //(int)round(enemy.getIcon().getHeight(null)/1.5), 0);
+        x = (int) (x * xScale - enemyIcon.getWidth(null) / 2 + xScale/2);
+        y = (int) (y * yScale - enemyIcon.getHeight(null) / 2 + yScale/2);
+        g2.rotate(game.getAngle(enemy), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
+        g2.drawImage(enemyIcon, x, y, null);
+        g2.rotate(-(game.getAngle(enemy)), x + ENEMY_SIZE /2, y + ENEMY_SIZE /2);
     }
 
     /**
@@ -357,42 +310,21 @@ public class MapView extends JPanel {
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(fieldImage != null) {
-            Dimension currentSize = getSize();
-            if(size.equals(currentSize)) {
-                g.drawImage(fieldImage, 0, 0, null);
-            }
-            else {
-                // Rescale the previous image.
-                g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);
-            }
-        }
-    }
 
-    /**
-     * Erase the whole map and fill with background color.
-     */
-    public void eraseMap() {
-        g.setColor(BG_COLOR);
-        g.fillRect(0,0, getWidth(), getHeight());
-        eraseLabels(stationLabels);
-    }
+        g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setStroke(new BasicStroke(6));
 
-    /**
-     * Erase station labels from map.
-     * @param map
-     */
-    private void eraseLabels(Map<Station, StationLabel> map) {
-        for (JLabel label : map.values()) {
-            try {
-                Container parent = label.getParent();
-                parent.remove(label);
-                parent.validate();
-                parent.repaint();
-            } catch (NullPointerException npe){
-                // npe is fine, means label was a duplicate and never added.
-            }
-        }
+        xScale = (double) size.width / gridWidth;
+        yScale = (double) size.height / gridHeight;
+        xScale = yScale = min(xScale, yScale);
+
+        drawLinesBetweenAllStations();
+        highlightActiveRoute();
+        drawStations();
+        drawEnemies();
+        drawPlayer();
     }
 
     public void displayObjective() {
@@ -404,8 +336,7 @@ public class MapView extends JPanel {
             objective.setText(OBJECTIVE_TEXT);
             objective.setSize(objective.getPreferredSize());
             objective.setLocation(size.width / 2 - objective.getSize().width / 2,
-                    20);
-            System.out.println(objective.getText());
+                    80);
         }
     }
 
@@ -418,8 +349,7 @@ public class MapView extends JPanel {
             commandLabel.setText(GAME_COMMAND);
             commandLabel.setSize(commandLabel.getPreferredSize());
             commandLabel.setLocation(size.width / 2 - commandLabel.getSize().width / 2,
-                    50);
-            System.out.println(commandLabel.getText());
+                    110);
         }
     }
 
@@ -443,20 +373,26 @@ public class MapView extends JPanel {
                     size.height / 2 - bigCountDown.getSize().height / 2);
         }
         bigCountDown.setText("" + timeLeft);
-        System.out.println(timeLeft);
     }
 
     public void removeBigCountDown() {
         remove(bigCountDown);
     }
 
-    public void updateScore(int score) {
-        scoreCounter.setText("Score: " + score);
+    public void updateScore(double score) {
+        scoreCounter.setText("Score: " + (int)round(score));
         scoreCounter.setSize(scoreCounter.getPreferredSize());
-        System.out.println(score);
     }
 
-    public void removeGameOver() {
-        remove(gameOver);
+    public void updateHealth(double health) {
+        if (health < 80) healthCounter.setForeground(Color.YELLOW);
+        if (health < 50) healthCounter.setForeground(Color.ORANGE);
+        if (health < 20) healthCounter.setForeground(Color.RED);
+        healthCounter.setText("Health: " + (int)round(health));
+        healthCounter.setSize(healthCounter.getPreferredSize());
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }
