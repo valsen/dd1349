@@ -57,10 +57,10 @@ public class Game {
         graphs.add(new TestGraph());
         //graphs.add(new StarGraph());
         currentGraph = graphs.get(0);
-        gui = new GUI(this, WIDTH, HEIGHT, DEPTH);
         createEnemies(currentGraph);
         setStartingStations(currentGraph);
         createMainTrain();
+        gui = new GUI(this, WIDTH, HEIGHT, DEPTH);
     }
     private void createMainTrain() {
         player = new Player(startingStation.getRoundedX(), startingStation.getRoundedY(), startingStation.getRoundedZ());
