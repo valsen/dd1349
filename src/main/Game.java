@@ -165,11 +165,11 @@ public class Game {
                     gui.getMap().updateView();
                     difficulty += DIFFICULTY_INCREASE;
                     player.increaseVelocity(PLAYER_SPEED_INCREASE);
-                    if(difficulty > 5) {
+                    if(difficulty > 0) {
                         spinning = true;
-                        yaw = -0.003;
-                        pitch = 0.003;
-                        roll = 0.003;
+                        yaw = -0.002;
+                        pitch = 0.002;
+                        roll = 0.002;
                     }
                     if(difficulty > 10) {
                         spinning = false;
@@ -178,9 +178,9 @@ public class Game {
                     if(difficulty > 15) {
                         shrinking = false;
                         spinning = true;
-                        yaw = 0.005;
-                        pitch = 0.005;
-                        roll = 0.005;
+                        yaw = 0.004;
+                        pitch = 0.004;
+                        roll = 0.004;
                     }
                     if (difficulty > 20) {
                         expanding = true;
@@ -191,14 +191,14 @@ public class Game {
                     if (difficulty > 30) {
                         expanding = false;
                         spinning = true;
-                        yaw = 0.007;
-                        pitch = 0.007;
-                        roll = 0.007;
+                        yaw = 0.006;
+                        pitch = 0.006;
+                        roll = 0.006;
                     }
                     if (difficulty > 35) {
-                        yaw = -0.01;
-                        pitch = -0.01;
-                        roll = -0.01;
+                        yaw = -0.008;
+                        pitch = -0.008;
+                        roll = -0.008;
                         //spinningRandom = false;
                     }
                     if (difficulty > 40) {
